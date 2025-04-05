@@ -10,48 +10,29 @@ class Dado (ABC):
         else:
             raise ValueError("O dado deve conter um número positivo de lados")
     
-    @abstractmethod
-    def jogar (self):
+    def jogar (self) -> int:
         return randint (1, self._lados)
     
 class D4 (Dado):
     def __init__(self):
         super().__init__(4)
-
-    def jogar (self):
-        return randint(1, self._lados)
     
 class D6 (Dado):
     def __init__(self):
         super().__init__(6)
-
-    def jogar (self):
-        return randint(1, self._lados)
     
 class D8 (Dado):
     def __init__(self):
         super().__init__(8)
-
-    def jogar (self):
-        return randint(1, self._lados)
     
 class D10 (Dado):
     def __init__(self):
         super().__init__(10)
-
-    def jogar (self):
-        return randint(1, self._lados)
     
 class D12 (Dado):
     def __init__(self):
         super().__init__(12)
-
-    def jogar (self):
-        return randint(1, self._lados)
     
 class D20 (Dado):
     def __init__(self):
         super().__init__(20)
-
-    def jogar (self):
-        return randint(1, self._lados)
