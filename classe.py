@@ -33,6 +33,54 @@ class Classe(ABC):
             f")"
             ) 
     
+    @property
+    def nome (self):
+        return self._nome
+    
+    @property
+    def pontos_vida (self):
+        return self._pontos_vida
+    
+    @property
+    def dado_ataque (self):
+        return self._dado_ataque
+    
+    @property
+    def pontos_ataque (self):
+        return self._pontos_ataque
+
+    @property
+    def pontos_defesa (self):
+        return self._pontos_defesa
+
+    @property
+    def limite_habilidades (self):
+        return self._limite_habilidades
+
+    @pontos_vida.setter
+    #recebe um novo valor para pontos_de vida e substitui o antigo
+    def pontos_vida (self, novo):
+        if novo <= 0:
+            raise ValueError("O seu personagem morreu!")
+        else :
+            self._pontos_vida = novo    
+    
+    @dado_ataque.setter
+    #recebe um novo valor para dano_ataque e substitui o antigo
+    def pontos_ataque (self, novo):
+        if novo <= 0:
+            raise ValueError("O dano de ataque deve ser um valor positivo!")
+        else:
+            self._pontos_ataque = novo
+    
+    @pontos_defesa.setter
+    #recebe um novo valor para pontos_defesa e substitui o antigo
+    def pontos_defesa (self, novo):
+        if novo < 0:
+            raise ValueError("O valor dos pontos de defesa deve ser igual ou superior a 0!")
+        else:
+            self._pontos_defesa = novo
+
 class Guerreiro (Classe):
     def __init__(self):
         super().__init__(
