@@ -11,6 +11,28 @@ class Classe(ABC):
         self._pontos_defesa : int = pontos_defesa
         self._limite_habilidades : int = limite_habilidades
 
+    def __str__(self) -> str:
+        return (
+            f"Nome: {self._nome}\n"
+            f"Pontos de Vida: {self._pontos_vida}\n"
+            f"Dado de Ataque: {self._dado_ataque.__class__.__name__}\n"
+            f"Pontos de Ataque: {self._pontos_ataque}\n"
+            f"Pontos de Defesa: {self._pontos_defesa}\n"
+            f"Limite de Habilidades: {self._limite_habilidades}"
+            )
+    
+    def __repr__(self) -> str:
+        return (
+            f"{self.__class__.__name__}("
+            f"nome='{self._nome}', "
+            f"pontos_vida={self._pontos_vida}, "
+            f"dado_ataque={self._dado_ataque.__class__.__name__}(), "
+            f"pontos_ataque={self._pontos_ataque}, "
+            f"pontos_defesa={self._pontos_defesa}, "
+            f"limite_habilidades={self._limite_habilidades}"
+            f")"
+            ) 
+    
 class Guerreiro (Classe):
     def __init__(self):
         super().__init__(

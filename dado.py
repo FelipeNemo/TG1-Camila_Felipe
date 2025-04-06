@@ -13,6 +13,12 @@ class Dado (ABC):
     def jogar (self) -> int:
         return randint (1, self._lados)
     
+    def __str__(self) -> str :
+        return f"Lados: {self._lados}"
+    
+    def __repr__(self) -> str:
+        return f"Lados = {self._lados}"
+    
 class D4 (Dado):
     def __init__(self):
         super().__init__(4)
