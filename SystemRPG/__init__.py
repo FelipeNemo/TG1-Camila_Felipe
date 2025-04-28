@@ -2,3 +2,4 @@
 from .classes import *
 from .constantes import *
 from .erros import *
+from .loadPersonagem import *
