@@ -1,5 +1,5 @@
 #imports do pacote
-from .classes import *
-from .constantes import *
-from .erros import *
-from .loadPersonagem import *
+from .gaming import *
+from .constants import *
+from .errors import *
+from .loading import *

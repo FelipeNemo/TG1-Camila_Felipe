@@ -1,85 +1,10 @@
-"""Classes para manipulação e gerenciamento do RPG"""
+"""Classes para manipulação e gerenciamento de usuários e saus ações"""
 
 # Imports.
-from .erros import *
+from .gaming import *
+from .errors import *
 #from . import constantes as const
-import random 
 from abc import ABC, abstractmethod
-
-# Dado : Classe abstrata que representa um dado de RPG. (Feito)
-# lados : Número de lados do dado. (Feito)
-# jogar() : Método que simula o lançamento do dado e retorna um número aleatório entre 1 e o número de lados do dado. (Feito)
-class Dado(ABC):
-    def __init__(self, lados):
-        self._lados = lados
-
-    @property
-    def lados(self):
-        return self._lados
-
-    @lados.setter
-    def lados(self, lados):
-        if lados <= 1:
-            raise NumeroLadosInvalido("O número de lados deve ser maior que 0")
-        self._lados = lados
-
-    def __str__(self):
-        return f"{self.__class__.__name__} com {self.lados} lados"
-
-    @abstractmethod
-    def jogar(self):
-        """Método que simula o lançamento do dado"""
-        pass
-
-#Subclasses para cada tipo principal de Dado:
-#D4 : Subclasse de  Dado  que representa um dado de 4 lados. (Feito)
-class D4(Dado):
-    def __init__(self):
-        super().__init__(4)
-
-    def jogar(self):
-        return random.randint(1, self.lados) # (a=inicio,b=fim do range)
-    
-#D6 : Subclasse de  Dado  que representa um dado de 6 lados. (Feito)
-class D6(Dado):
-    def __init__(self):
-        super().__init__(6)
-
-    def jogar(self):
-        return random.randint(1, self.lados)
-    
-#D8 : Subclasse de  Dado  que representa um dado de 8 lados. (Feito)
-class D8(Dado):
-    def __init__(self):
-        super().__init__(8)
-
-    def jogar(self):
-        return random.randint(1, self.lados)
-    
-#D10 : Subclasse de  Dado  que representa um dado de 10 lados. (Feito)
-class D10(Dado):
-    def __init__(self):
-        super().__init__(10)
-
-    def jogar(self):
-        return random.randint(1, self.lados)
-    
-#D12 : Subclasse de  Dado  que representa um dado de 12 lados. (Feito)
-class D12(Dado):
-    def __init__(self):
-        super().__init__(12)
-
-    def jogar(self):
-        return random.randint(1, self.lados)
-    
-#D20 : Subclasse de  Dado  que representa um dado de 20 lados. (Feito)
-class D20(Dado):
-    def __init__(self):
-        super().__init__(20)
-
-    def jogar(self):
-        return random.randint(1, self.lados)
-        
 
 #Classe : Classe abstrata que representa uma classe de personagem. Deve conter os seguintes atributos: (Feito) 
 #nome : Nome da classe. (Feito)
@@ -104,7 +29,7 @@ class Classe(ABC):
     
     @nome.setter 
     def nome(self, nome):
-        self.nome = nome
+        self._nome = nome
 
 
     @property
@@ -161,7 +86,7 @@ class Classe(ABC):
 class Guerreiro(Classe):
     def __init__(self):
         super().__init__(
-            nome="Guerreiro",
+            #nome="Guerreiro",
             pontos_vida=10 + (8 * 5),  # 10 + (pontos_defesa * 5)
             dado_de_ataque=D12(),      # Dado de ataque é um D12
             pontos_ataque=6,
@@ -178,7 +103,7 @@ class Guerreiro(Classe):
 class Mago(Classe):
     def __init__(self):
         super().__init__(
-            nome="Mago",
+            #nome="Mago",
             pontos_vida=8 + (3 * 2),  
             dado_de_ataque=D6(),
             pontos_ataque=10,
@@ -194,7 +119,7 @@ class Mago(Classe):
 class Ladino(Classe):
     def __init__(self):
         super().__init__(
-            nome="Ladino",
+            #nome="Ladino",
             pontos_vida=6 + (5 * 3),  
             dado_de_ataque=D8(),
             pontos_ataque=8,
@@ -229,6 +154,17 @@ class Personagem:
         self._nome = nome
 
     @property
+    def classe(self):
+        return self._classe
+
+    @classe.setter
+    def classe(self, nova_classe):
+        if isinstance(nova_classe, Classe):  # Aqui garante que é uma instância válida
+            self._classe = nova_classe
+        else:
+            raise TypeError("classe deve ser uma instância de Classe")
+
+    @property
     def inventario(self):
         return self._inventario
     
@@ -237,6 +173,27 @@ class Personagem:
         self._inventario = inventario
         
 # - Métodos:
+# criar_personagem()
+# cria o objeto personagem
+    @staticmethod 
+    def criar_personagem(nome, nome_classe, habilidades_raw):
+        # Criação do inventário com base nas habilidades passadas
+        inventario = [Habilidade(habilidade) for habilidade in habilidades_raw]
+
+        # Criação da classe do personagem com base no nome da classe
+        if nome_classe == "Guerreiro":
+            classe = Guerreiro()
+        elif nome_classe == "Mago":
+            classe = Mago()
+        elif nome_classe == "Ladino":
+            classe = Ladino()
+        else:
+            raise ValueError(f"Classe '{nome_classe}' não reconhecida.")
+
+        # Criação e retorno do personagem
+        return Personagem(nome, classe, inventario)
+
+        
 #atacar(alvo : Personagem) : Método que simula um ataque do personagem,
 #retornando o dano causado.
 #Ao atacar, o personagem deve, antes de jogar o dado de ataque, verificar se não
@@ -244,29 +201,13 @@ class Personagem:
 #Enquanto houver habilidades no inventário, o personagem deve ter uma chance
 #de 50% de usar uma habilidade.
 #O dano padrão de qualquer personagem é realizado com o dado de ataque da classe.
-    def atacar(self, alvo):
-        if self._inventario and random.random() < 0.5:
-            return self.usar_habilidade(alvo)
-        else:
-            dano = self.classe.rolar_dado_ataque()
-            print(f"{self._nome} atacou {alvo._nome} com dano de {dano}.")
-            return dano
+
 
 #usar_habilidade(alvo : Personagem) : Método que simula o uso de uma
 #habilidade, retornando o dano causado.
-    def usar_habilidade(self, alvo):
-            """
-            Usa a habilidade especial da classe e retorna o dano causado.
-            Pode também ser adaptado para usar uma habilidade do inventário.
-            """
-            if self.inventario:
-                habilidade = self.inventario.pop(0)  # remove a primeira habilidade do inventário
-                print(f"{self._nome} usou a habilidade '{habilidade}' em {alvo.nome}!")
-                dano = self.classe.habilidade_especial()
-                return dano
-            else:
-                print(f"{self._nome} tentou usar uma habilidade, mas não tem nenhuma!")
-                return 0
+
+
+
 
 
 #Habilidade : Classe que representa uma habilidade do personagem.
@@ -274,7 +215,6 @@ class Personagem:
 #descricao : Descrição da habilidade.
 #pontos_ataque : Pontos de ataque da habilidade.
 #usar() : Método que simula o uso da habilidade.
-
 
 class Habilidade:
     def __init__(self, nome, descricao, pontos_ataque):
@@ -334,73 +274,3 @@ class TiroArco(Habilidade):
 
     def usar(self):
         print(f"{self.nome} lançado! {self.descricao} Causa {self.pontos_ataque} de dano.")
-
-#Arena : Classe que representa a arena de combate.
-#personagens : Lista de personagens que estão na arena. (Feito)
-#adicionar_personagem() : Método que adiciona um personagem à arena. (Feito)
-#remover_personagem() : Método que remove um personagem da arena. (Feito)
-#combate() : Método que simula o combate entre os personagens da arena,
-#retornando o vencedor.
-#As regras do combate serão as seguintes:
-#O combate será realizado em turnos, onde cada personagem pode atacar
-#um oponente aleatório (em combates com dois jogadores, será sempre o
-#mesmo).
-#O atacante rodará um D20 (um dado de 20 lados) e somará o resultado ao
-#seu ataque.
-#Se o valor final de ataque for maior que o valor de defesa do oponente, o
-#ataque será bem sucedido.
-
-
-class Arena:
-    def __init__(self, personagens=None):
-        self.personagens = personagens if personagens is not None else [] # se personagem ta na lista... e se é instancia de personagem
-
-    def adicionar_personagem(self, personagem):
-        self.personagens.append(personagem)
-
-    def remover_personagem(self, personagem):
-        if personagem in self.personagens:
-            self.personagens.remove(personagem)
-
-    def combate(self):
-        if len(self.personagens) < 2:
-            print("Combate precisa de pelo menos dois personagens.") # Lançar erro
-            return None
-
-        vivos = self.personagens[:]
-
-        while len(vivos) > 1:
-            for atacante in vivos[:]:
-                # Seleciona um oponente aleatório que não seja o próprio atacante
-                oponentes = [p for p in vivos if p != atacante]
-                if not oponentes:
-                    break
-                alvo = random.choice(oponentes) # alvo recebe escolha de oponente aleatório 
-                # executar a função jogar da subclasse D20
-                d20 = random.randint(1, 20) # atribui o resultado aleatório a d20 ... mas não estou usando a classe D20...
-                ataque_total = d20 + atacante.ataque # soma 
-
-                print(f"{atacante.nome} rola D20 = {d20} + ataque {atacante.ataque} = {ataque_total}")
-                print(f"{alvo.nome} tem defesa {alvo.defesa}")
-
-                if ataque_total > alvo.defesa:
-                    dano = atacante.ataque
-                    print(f"Ataque bem-sucedido! {alvo.nome} sofre {dano} de dano.")
-                    alvo.sofrer_dano(dano)
-                else:
-                    print(f"{atacante.nome} errou o ataque em {alvo.nome}.")
-
-                if alvo.pontos_vida <= 0:
-                    print(f"{alvo.nome} foi derrotado!")
-                    vivos.remove(alvo)
-
-                if len(vivos) == 1:
-                    break
-
-        vencedor = vivos[0]
-        print(f"\n{vencedor.nome} é o vencedor!")
-        return vencedor
-
-
-
-

@@ -20,6 +20,11 @@ import SystemRPG as r
 def main():
     personagens, erros = r.carregar_personagens("Entrada/entrada.txt")
 
+    print("\n=== PERSONAGENS CARREGADOS ===")
+    print(personagens)
+    for personagem in personagens:
+        print(personagem)
+
 
     if erros:
         r.salvar_csv("erros.log", [["Personagem", "Erro"]] + erros)
