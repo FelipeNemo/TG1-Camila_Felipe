@@ -22,7 +22,7 @@ def main():
 
 
     if erros:
-        r.salvar_csv("erros.csv", [["Personagem", "Erro"]] + erros)
+        r.salvar_csv("erros.log", [["Personagem", "Erro"]] + erros)
 
     while True:
         print("\n=== MENU RPG ===")
