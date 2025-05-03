@@ -7,3 +7,10 @@ class NumeroLadosInvalido(Exception):
         self.__msg=mensagem
     def __str__(self):
         return "NumeroLadosInvalido (" + self.__msg +")"
+    
+class ErroClasseInvalida(Exception):
+    """classe deve ser uma instância de Classe"""
+    def __init__(self, mensagem):
+        self.__msg=mensagem
+    def __str__(self):
+        return "ErroClasseInvalida (" + self.__msg +")"

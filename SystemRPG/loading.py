@@ -4,7 +4,7 @@ from .users import *
 from .errors import *
 from .constants import *
 
-# Função para salvar os erros em CSV
+
 def salvar_csv(nome_arquivo, dados):
     with open(nome_arquivo, mode='w', newline='') as file:
         writer = csv.writer(file)
@@ -25,7 +25,7 @@ def carregar_personagens(caminho_arquivo):
                 if linha.startswith("### "):
                     if nome and classe and habilidades:
                         print(f"[DEBUG] Criando personagem: {nome}, {classe}, {habilidades}")
-                        personagem = criar_personagem(nome, classe, habilidades)
+                        personagem = Personagem.criar_personagem(nome, classe, habilidades)
                         if personagem:
                             personagens.append(personagem)
                         else:
@@ -53,7 +53,7 @@ def carregar_personagens(caminho_arquivo):
             # Último personagem após o loop
             if nome and classe and habilidades:
                 print(f"[DEBUG] Criando último personagem: {nome}, {classe}, {habilidades}")
-                personagem = criar_personagem(nome, classe, habilidades)
+                personagem = Personagem.criar_personagem(nome, classe, habilidades)
                 if personagem:
                     personagens.append(personagem)
                 else:

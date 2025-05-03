@@ -15,8 +15,8 @@ from abc import ABC, abstractmethod
 #limite_habilidades : Limite de habilidades que o personagem pode ter. (Feito)
 
 class Classe(ABC):
-    def __init__(self, nome, pontos_vida, dado_de_ataque, pontos_ataque,pontos_defesa, limite_habilidades):
-        self._nome = nome
+    def __init__(self, pontos_vida, dado_de_ataque, pontos_ataque, pontos_defesa, limite_habilidades):
+        self._nome = self.__class__.__name__  # define o nome com base na classe
         self._pontos_vida = pontos_vida
         self._dado_de_ataque = dado_de_ataque # objeto criado pela classe Dado
         self._pontos_ataque = pontos_ataque
@@ -38,7 +38,7 @@ class Classe(ABC):
     
     @pontos_vida.setter 
     def pontos_vida(self, pontos_vida):
-        self.nompontos_vida = pontos_vida
+        self._pontos_vida = pontos_vida
 
 
     @property
@@ -47,7 +47,7 @@ class Classe(ABC):
     
     @dado_de_ataque.setter 
     def dado_de_ataque(self, dado_de_ataque):
-        self.dado_de_ataque = dado_de_ataque
+        self._dado_de_ataque = dado_de_ataque
 
 
     @property
@@ -55,8 +55,8 @@ class Classe(ABC):
         return self._pontos_ataque
     
     @pontos_ataque.setter 
-    def _pontos_ataque(self, _pontos_ataque):
-        self._pontos_ataque = _pontos_ataque
+    def pontos_ataque(self, pontos_ataque):
+        self._pontos_ataque = pontos_ataque
 
 
     @property
@@ -74,7 +74,7 @@ class Classe(ABC):
     
     @limite_habilidades.setter 
     def limite_habilidades(self, limite_habilidades):
-        self.limite_habilidades = limite_habilidades
+        self._limite_habilidades = limite_habilidades
 
         
 #Guerreiro : Subclasse de  Classe  que representa um guerreiro. (Feito)
@@ -162,7 +162,7 @@ class Personagem:
         if isinstance(nova_classe, Classe):  # Aqui garante que é uma instância válida
             self._classe = nova_classe
         else:
-            raise TypeError("classe deve ser uma instância de Classe")
+            raise ErroClasseInvalida("classe deve ser uma instância de Classe")
 
     @property
     def inventario(self):
@@ -171,14 +171,31 @@ class Personagem:
     @inventario.setter 
     def inventario(self, inventario):
         self._inventario = inventario
+
+    def __str__(self):
+        return (
+        f"Nome: {self._nome} | "
+        f"Classe: {self._classe._nome} | "
+        f"Habilidades: {[habilidade.__class__.__name__ for habilidade in self._inventario]}"
+    )
+
         
 # - Métodos:
 # criar_personagem()
 # cria o objeto personagem
     @staticmethod 
     def criar_personagem(nome, nome_classe, habilidades_raw):
-        # Criação do inventário com base nas habilidades passadas
-        inventario = [Habilidade(habilidade) for habilidade in habilidades_raw]
+        habilidades_map = {"BolaDeFogo": BolaDeFogo,
+                           "Cura": Cura,
+                           "Tiro de Arco": TiroArco
+                           }
+        inventario = []
+        for habilidade_nome in habilidades_raw:
+            if habilidade_nome in habilidades_map:
+                inventario.append(habilidades_map[habilidade_nome]())
+            else:
+                raise ValueError(f"Habilidade '{habilidade_nome}' não reconhecida.")
+
 
         # Criação da classe do personagem com base no nome da classe
         if nome_classe == "Guerreiro":
@@ -205,6 +222,7 @@ class Personagem:
 
 #usar_habilidade(alvo : Personagem) : Método que simula o uso de uma
 #habilidade, retornando o dano causado.
+
 
 
 
