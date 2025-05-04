@@ -13,4 +13,32 @@ class ErroClasseInvalida(Exception):
     def __init__(self, mensagem):
         self.__msg=mensagem
     def __str__(self):
+        return "ErroClasseInvalida (" + self.__msg +")"  
+
+class ErroLimiteInventario(Exception):
+    """Define o limite do inventário para cada Classe válida"""
+    def __init__(self, mensagem):
+        self.__msg=mensagem
+    def __str__(self):
+        return "ErroClasseInvalida (" + self.__msg +")" 
+
+class ErroHabilidadeInvalida(Exception):
+    """Habilidade não é válida - ou seja não possue classe com o nome da habilidade"""
+    def __init__(self, mensagem):
+        self.__msg=mensagem
+    def __str__(self):
+        return "ErroClasseInvalida (" + self.__msg +")"  
+
+class ErroInventarioVazio(Exception):
+    """Caso o inventário esteja vazio"""
+    def __init__(self, mensagem):
+        self.__msg=mensagem
+    def __str__(self):
+        return "ErroClasseInvalida (" + self.__msg +")"  
+
+class ErroDadoAtaqueInvalido(Exception):
+    """Dado de ataque deve ser instancia da classe dado"""
+    def __init__(self, mensagem):
+        self.__msg=mensagem
+    def __str__(self):
         return "ErroClasseInvalida (" + self.__msg +")"

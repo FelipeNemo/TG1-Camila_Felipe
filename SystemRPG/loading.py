@@ -31,7 +31,6 @@ def carregar_personagens(caminho_arquivo):
                         else:
                             erros.append([nome, f"Classe inválida: {classe}"])
 
-                    # Começa um novo personagem
                     nome = linha[4:].strip()
                     classe = None
                     habilidades = []
@@ -42,7 +41,6 @@ def carregar_personagens(caminho_arquivo):
                     print(f"[DEBUG] Classe encontrada: {classe}")
 
                 elif linha.startswith("- **Habilidades**:"):
-                    # Linha apenas de marcação, ignora
                     continue
 
                 elif linha.startswith("-"):  
@@ -50,7 +48,7 @@ def carregar_personagens(caminho_arquivo):
                     habilidades.append(habilidade)
                     print(f"[DEBUG] Habilidade adicionada: {habilidade}")
 
-            # Último personagem após o loop
+            #
             if nome and classe and habilidades:
                 print(f"[DEBUG] Criando último personagem: {nome}, {classe}, {habilidades}")
                 personagem = Personagem.criar_personagem(nome, classe, habilidades)
@@ -59,10 +57,28 @@ def carregar_personagens(caminho_arquivo):
                 else:
                     erros.append([nome, f"Classe inválida: {classe}"])
 
+
     except FileNotFoundError:
         erros.append(["Arquivo", "Não encontrado"])
+
+    except ErroClasseInvalida as e:
+        erros.append(["Classe inválida", str(e)])
+
+    except ErroLimiteInventario as e:
+        erros.append(["Limite de inventário excedido", str(e)])
+
+    except ErroInventarioVazio as e:
+        erros.append(["Inventário vazio", str(e)])
+
+    except ErroHabilidadeInvalida as e:
+        erros.append(["Habilidade inválida", str(e)]) 
+    
+    except ErroDadoAtaqueInvalido as e:
+        erros.append(["Dado de ataque inválido", str(e)])
+
     except Exception as e:
         erros.append(["Erro inesperado", str(e)])
+
 
     print("[DEBUG] Personagens carregados:", personagens)
     return personagens, erros

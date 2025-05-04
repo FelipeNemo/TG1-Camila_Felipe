@@ -1,4 +1,4 @@
-"""Classes para manipulação e gerenciamento de usuários e saus ações"""
+"""Classes para manipulação e gerenciamento de usuários e suas ações"""
 
 # Imports.
 from .gaming import *
@@ -23,13 +23,11 @@ class Classe(ABC):
         self._pontos_defesa = pontos_defesa
         self._limite_habilidades = limite_habilidades
 
+    
+    # nome será um atributo imutável, por isso não fiz o setter
     @property
     def nome(self):
-        return self._nome
-    
-    @nome.setter 
-    def nome(self, nome):
-        self._nome = nome
+        return self.__class__.__name__
 
 
     @property
@@ -47,6 +45,8 @@ class Classe(ABC):
     
     @dado_de_ataque.setter 
     def dado_de_ataque(self, dado_de_ataque):
+        if not isinstance(dado_de_ataque, Dado):
+            raise ErroDadoAtaqueInvalido("dado_de_ataque deve ser uma instância de Dado ou suas subclasses.")
         self._dado_de_ataque = dado_de_ataque
 
 
@@ -65,7 +65,7 @@ class Classe(ABC):
     
     @pontos_defesa.setter 
     def pontos_defesa(self, pontos_defesa):
-        self.pontos_defesa = pontos_defesa
+        self._pontos_defesa = pontos_defesa
 
 
     @property
@@ -179,6 +179,12 @@ class Personagem:
         f"Habilidades: {[habilidade.__class__.__name__ for habilidade in self._inventario]}"
     )
 
+    def __repr__(self):
+        return (
+        f"Personagem(nome='{self._nome}', "
+        f"classe='{self._classe._nome}', "
+        f"inventario={[habilidade.__class__.__name__ for habilidade in self._inventario]})"
+    )
         
 # - Métodos:
 # criar_personagem()
@@ -189,15 +195,8 @@ class Personagem:
                            "Cura": Cura,
                            "Tiro de Arco": TiroArco
                            }
-        inventario = []
-        for habilidade_nome in habilidades_raw:
-            if habilidade_nome in habilidades_map:
-                inventario.append(habilidades_map[habilidade_nome]())
-            else:
-                raise ValueError(f"Habilidade '{habilidade_nome}' não reconhecida.")
 
-
-        # Criação da classe do personagem com base no nome da classe
+        # 1. Cria a classe (isso já define limite_habilidades)
         if nome_classe == "Guerreiro":
             classe = Guerreiro()
         elif nome_classe == "Mago":
@@ -205,9 +204,20 @@ class Personagem:
         elif nome_classe == "Ladino":
             classe = Ladino()
         else:
-            raise ValueError(f"Classe '{nome_classe}' não reconhecida.")
+            raise ErroClasseInvalida(f"Classe '{nome_classe}'deve ser uma instância de Classe.")
 
-        # Criação e retorno do personagem
+        # 2. Verifica o limite de habilidades
+        if len(habilidades_raw) > classe.limite_habilidades:
+            raise ErroLimiteInventario(f"A classe '{classe.nome}' permite no máximo {classe.limite_habilidades} habilidades, mas você tentou adicionar {len(habilidades_raw)}.")
+
+        # 3. Monta o inventário
+        inventario = []
+        for habilidade_nome in habilidades_raw:
+            if habilidade_nome in habilidades_map:
+                inventario.append(habilidades_map[habilidade_nome]())
+            else:
+                raise ErroHabilidadeInvalida(f"Habilidade '{habilidade_nome}' não reconhecida.")
+
         return Personagem(nome, classe, inventario)
 
         
@@ -218,15 +228,27 @@ class Personagem:
 #Enquanto houver habilidades no inventário, o personagem deve ter uma chance
 #de 50% de usar uma habilidade.
 #O dano padrão de qualquer personagem é realizado com o dado de ataque da classe.
+    def atacar(self, alvo):
+        # Enquanto houver habilidades no inventário, 50% de chance de usar uma
+        if self._inventario and random.random() < 0.5:
+            dano = self.usar_habilidade(alvo)
+        else:
+            resultado_dado = self._classe.dado_de_ataque.jogar()
+            dano = max(0, resultado_dado - alvo._classe.pontos_defesa)
 
+        # Aplica o dano ao alvo
+        alvo._classe._pontos_vida -= dano
+        return dano
 
 #usar_habilidade(alvo : Personagem) : Método que simula o uso de uma
 #habilidade, retornando o dano causado.
+    def usar_habilidade(self, alvo):
+        if not self._inventario:
+            raise ErroInventarioVazio("O inventário está vazio. Nenhuma habilidade disponível.")
 
-
-
-
-
+        habilidade = self._inventario.pop(0)  # Remove e usa a primeira habilidade // pilha
+        dano = habilidade.executar(self, alvo)
+        return dano
 
 #Habilidade : Classe que representa uma habilidade do personagem.
 #nome : Nome da habilidade.
@@ -235,8 +257,8 @@ class Personagem:
 #usar() : Método que simula o uso da habilidade.
 
 class Habilidade:
-    def __init__(self, nome, descricao, pontos_ataque):
-        self.nome = nome
+    def __init__(self, descricao, pontos_ataque):
+        self.nome = self.__class__.__name__ 
         self.descricao = descricao
         self.pontos_ataque = pontos_ataque
 
@@ -253,7 +275,7 @@ class Habilidade:
 class BolaDeFogo(Habilidade):
     def __init__(self):
         super().__init__(
-            nome="Bola de Fogo",
+            #nome="Bola de Fogo",
             descricao="Uma bola de fogo que causa dano em área.",
             pontos_ataque=10
         )
@@ -269,7 +291,7 @@ class BolaDeFogo(Habilidade):
 class Cura(Habilidade):
     def __init__(self):
         super().__init__(
-            nome="Cura",
+            #nome="Cura",
             descricao="Uma magia de que regenera danos em área.",
             pontos_ataque=-10 # -10 pois recupera dano hmm mas é tudo ataque ... 
         )                     # to recuperando a vida... a habilidade deve adicionar pontos de vida caso a hida não esteja cheia
@@ -285,7 +307,7 @@ class Cura(Habilidade):
 class TiroArco(Habilidade):
     def __init__(self):
         super().__init__(
-            nome="Tiro do Arco",
+            #nome="Tiro do Arco",
             descricao="Tiro de arco no oponente.",
             pontos_ataque=6 
         )

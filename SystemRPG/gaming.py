@@ -81,7 +81,6 @@ class D20(Dado):
         return random.randint(1, self.lados)
 
 
-
 #Arena : Classe que representa a arena de combate.
 #personagens : Lista de personagens que estão na arena. (Feito)
 #adicionar_personagem() : Método que adiciona um personagem à arena. (Feito)
