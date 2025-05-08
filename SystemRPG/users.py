@@ -2,9 +2,12 @@
 
 # Imports.
 from .gaming import *
+# Dado, D4, D6, D8, D12, D10, D20
 from .errors import *
 #from . import constantes as const
+import random
 from abc import ABC, abstractmethod
+
 
 #Classe : Classe abstrata que representa uma classe de personagem. Deve conter os seguintes atributos: (Feito) 
 #nome : Nome da classe. (Feito)
@@ -46,7 +49,7 @@ class Classe(ABC):
     @dado_de_ataque.setter 
     def dado_de_ataque(self, dado_de_ataque):
         if not isinstance(dado_de_ataque, Dado):
-            raise ErroDadoAtaqueInvalido("dado_de_ataque deve ser uma instância de Dado ou suas subclasses.")
+            raise ErroDadoAtaqueInvalido("dado_de_ataque deve ser uma instância das subclasses de Dado.")
         self._dado_de_ataque = dado_de_ataque
 
 
@@ -76,7 +79,15 @@ class Classe(ABC):
     def limite_habilidades(self, limite_habilidades):
         self._limite_habilidades = limite_habilidades
 
-        
+    @abstractmethod # Não achei outra função abstrata ainda para essa classe... acho que vai ser algo relacionado aos danos nos atributos
+    def __str__(self): # Em classes que herdam o str só é preciso ser implementado na mãe
+        """Cada classe deve definir como usa suas habilidades."""
+        pass
+
+    def __repr__(self):
+        # Representação técnica para debug
+        return f"Classe(nome={self._nome}, pontos_vida={self._pontos_vida}, pontos_ataque={self._pontos_ataque}, pontos_defesa={self._pontos_defesa})"
+    
 #Guerreiro : Subclasse de  Classe  que representa um guerreiro. (Feito)
 #pontos_vida : 10 + ( pontos_defesa * 5). (Feito)
 #dado_de_ataque : D12. (Feito)
@@ -93,6 +104,9 @@ class Guerreiro(Classe):
             pontos_defesa=8,
             limite_habilidades=2
         )
+    def __str__(self):
+        return f"{self._nome} - Vida: {self._pontos_vida}, Ataque: {self._pontos_ataque}, Defesa: {self._pontos_defesa}"
+
 
 #Mago : Subclasse de  Classe  que representa um mago.
 #pontos_vida : 8 + ( pontos_defesa * 2)
@@ -110,6 +124,9 @@ class Mago(Classe):
             pontos_defesa=3,
             limite_habilidades=5
         )
+
+    def __str__(self):
+        return f"{self._nome} - Vida: {self._pontos_vida}, Ataque: {self._pontos_ataque}, Defesa: {self._pontos_defesa}"
 #Ladino : Subclasse de  Classe  que representa um ladino.
 #pontos_vida : 6 + ( pontos_defesa * 3)
 #dado_de_ataque : D8.
@@ -126,6 +143,9 @@ class Ladino(Classe):
             pontos_defesa=5,
             limite_habilidades=3
         )
+
+    def __str__(self):
+        return f"{self._nome} - Vida: {self._pontos_vida}, Ataque: {self._pontos_ataque}, Defesa: {self._pontos_defesa}"
 
 #Personagem : Classe que representa um personagem do jogo. (Feito)
 #qntd_instancias : Atributo que representa a quantidade de objetos instanciados. (Feito)
@@ -187,8 +207,9 @@ class Personagem:
     )
         
 # - Métodos:
-# criar_personagem()
-# cria o objeto personagem
+    def esta_vivo(self):
+        return self.classe.pontos_vida > 0
+# criar_personagem(): Cria o objeto personagem
     @staticmethod 
     def criar_personagem(nome, nome_classe, habilidades_raw):
         habilidades_map = {"BolaDeFogo": BolaDeFogo,
@@ -220,7 +241,15 @@ class Personagem:
 
         return Personagem(nome, classe, inventario)
 
-        
+
+#usar_habilidade(alvo : Personagem) : Método que simula o uso de uma habilidade, retornando o dano causado.
+# verifica se a habilidade está no inventário 
+    def usar_habilidade(self, habilidade, alvo):
+        if habilidade not in self._inventario:
+            raise ErroHabilidadeNaoEncontrada("Habilidade não está no inventário.")
+        return habilidade.usar(self, alvo)
+
+    
 #atacar(alvo : Personagem) : Método que simula um ataque do personagem,
 #retornando o dano causado.
 #Ao atacar, o personagem deve, antes de jogar o dado de ataque, verificar se não
@@ -229,88 +258,17 @@ class Personagem:
 #de 50% de usar uma habilidade.
 #O dano padrão de qualquer personagem é realizado com o dado de ataque da classe.
     def atacar(self, alvo):
-        # Enquanto houver habilidades no inventário, 50% de chance de usar uma
         if self._inventario and random.random() < 0.5:
-            dano = self.usar_habilidade(alvo)
+            # 50% de chance de usar uma habilidade
+            return self.usar_habilidade(alvo)
         else:
-            resultado_dado = self._classe.dado_de_ataque.jogar()
-            dano = max(0, resultado_dado - alvo._classe.pontos_defesa)
+            # Dano padrão: joga o dado de ataque e soma os pontos de ataque
+            dano_bruto = self._classe.dado_de_ataque.rolar() + self._classe.pontos_ataque
+            # Dano real é o dano bruto menos os pontos de defesa do alvo (mínimo 0)
+            dano_real = max(0, dano_bruto - alvo._classe.pontos_defesa)
+            # Aplica o dano ao alvo
+            alvo._classe.pontos_vida -= dano_real
+            return dano_real
 
-        # Aplica o dano ao alvo
-        alvo._classe._pontos_vida -= dano
-        return dano
-
-#usar_habilidade(alvo : Personagem) : Método que simula o uso de uma
-#habilidade, retornando o dano causado.
-    def usar_habilidade(self, alvo):
-        if not self._inventario:
-            raise ErroInventarioVazio("O inventário está vazio. Nenhuma habilidade disponível.")
-
-        habilidade = self._inventario.pop(0)  # Remove e usa a primeira habilidade // pilha
-        dano = habilidade.executar(self, alvo)
-        return dano
-
-#Habilidade : Classe que representa uma habilidade do personagem.
-#nome : Nome da habilidade.
-#descricao : Descrição da habilidade.
-#pontos_ataque : Pontos de ataque da habilidade.
-#usar() : Método que simula o uso da habilidade.
-
-class Habilidade:
-    def __init__(self, descricao, pontos_ataque):
-        self.nome = self.__class__.__name__ 
-        self.descricao = descricao
-        self.pontos_ataque = pontos_ataque
-
-    def usar(self):
-        print(f"{self.nome} usada! Causa {self.pontos_ataque} de dano.")
-
-    def __str__(self):
-        return f"Habilidade: {self.nome}\nDescrição: {self.descricao}\nPontos de Ataque: {self.pontos_ataque}"
-
-#BolaDeFogo : Subclasse de  Habilidade  que representa uma bola de fogo.
-#descricao : "Uma bola de fogo que causa dano em área."
-#usar() : Método que simula o uso da habilidade, causando 10 dano.
     
-class BolaDeFogo(Habilidade):
-    def __init__(self):
-        super().__init__(
-            #nome="Bola de Fogo",
-            descricao="Uma bola de fogo que causa dano em área.",
-            pontos_ataque=10
-        )
 
-    def usar(self):
-        print(f"{self.nome} lançada! {self.descricao} Causa {self.pontos_ataque} de dano.")
-  
-
-
-#Cura : Subclasse de  Habilidade  que representa uma cura.
-#descricao : "Uma cura que recupera 10 pontos de vida."
-#usar() : Método que simula o uso da habilidade, recuperando 10 pontos de vida.
-class Cura(Habilidade):
-    def __init__(self):
-        super().__init__(
-            #nome="Cura",
-            descricao="Uma magia de que regenera danos em área.",
-            pontos_ataque=-10 # -10 pois recupera dano hmm mas é tudo ataque ... 
-        )                     # to recuperando a vida... a habilidade deve adicionar pontos de vida caso a hida não esteja cheia
-
-    def usar(self):
-        print(f"{self.nome} lançada! {self.descricao} Causa {self.pontos_ataque} de cura.")
-  
-
-#Tiro de Arco : Subclasse de  Habilidade  que representa um tiro de arco.
-#descricao : "Um tiro de arco que causa dano em área."
-#usar() : Método que simula o uso da habilidade, causando 6 dano.
-
-class TiroArco(Habilidade):
-    def __init__(self):
-        super().__init__(
-            #nome="Tiro do Arco",
-            descricao="Tiro de arco no oponente.",
-            pontos_ataque=6 
-        )
-
-    def usar(self):
-        print(f"{self.nome} lançado! {self.descricao} Causa {self.pontos_ataque} de dano.")

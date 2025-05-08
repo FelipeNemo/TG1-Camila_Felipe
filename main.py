@@ -1,5 +1,5 @@
 # menu
-import SystemRPG as r
+
 
 # Opções menu
 # Combate entre dois personagens
@@ -16,7 +16,7 @@ import SystemRPG as r
 # teste obj----------------------------------------------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------------------------------------------------------
-
+import SystemRPG as r
 def main():
     personagens, erros = r.carregar_personagens("Entrada/entrada.txt")
     if erros:

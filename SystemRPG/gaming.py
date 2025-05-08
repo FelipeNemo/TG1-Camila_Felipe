@@ -3,7 +3,7 @@
 # Imports.
 from .errors import *
 #from . import constantes as const
-import random 
+import random
 from abc import ABC, abstractmethod
 
 # Dado : Classe abstrata que representa um dado de RPG. (Feito)
@@ -79,12 +79,76 @@ class D20(Dado):
 
     def jogar(self):
         return random.randint(1, self.lados)
+    
+#Habilidade : Classe que representa uma habilidade do personagem.
+#nome : Nome da habilidade.
+#descricao : Descrição da habilidade.
+#pontos_ataque : Pontos de ataque da habilidade.
+#usar() : Método que simula o uso da habilidade.
 
+class Habilidade:
+    def __init__(self, descricao, pontos_ataque):
+        self.nome = self.__class__.__name__ 
+        self.descricao = descricao
+        self.pontos_ataque = pontos_ataque
+
+    def usar(self, personagem_atual, alvo):
+        print(f"Habilidade {self.__class__.__name__ } foi usada")
+
+    def __str__(self):
+        return f"{self.nome}: (Poder de ataque: {self.pontos_ataque})"
+
+
+
+#BolaDeFogo : Subclasse de  Habilidade  que representa uma bola de fogo.
+#descricao : "Uma bola de fogo que causa dano em área."
+#usar() : Método que simula o uso da habilidade, causando 10 dano.
+    
+class BolaDeFogo(Habilidade):
+    def __init__(self):
+        super().__init__(
+            descricao="Bola de fogo lançada, causa 10 pontos de dano!",
+            pontos_ataque=10
+        )
+
+    def usar(self, personagem_atual, alvo): # Checar na lista a se tem habilidade e usar Fazer o tratamento aqui
+        alvo._classe._pontos_vida -= self.pontos_ataque
+        return self.pontos_ataque, 1  # 1 = ataque
+
+#Cura : Subclasse de  Habilidade  que representa uma cura.
+#descricao : "Uma cura que recupera 10 pontos de vida."
+#usar() : Método que simula o uso da habilidade, recuperando 10 pontos de vida.
+class Cura(Habilidade):
+    def __init__(self):
+        super().__init__(
+            descricao="Magia de cura lançada, usuário recebe 10 pontos de vida!",
+            pontos_ataque=10 
+        )                     
+
+    def usar(self, personagem_atual, alvo):
+        personagem_atual._classe._pontos_vida += self.pontos_ataque
+        return self.pontos_ataque, 0  # 0 = cura
+
+
+#Tiro de Arco : Subclasse de  Habilidade  que representa um tiro de arco.
+#descricao : "Um tiro de arco que causa dano em área."
+#usar() : Método que simula o uso da habilidade, causando 6 dano.
+
+class TiroArco(Habilidade):
+    def __init__(self):
+        super().__init__(
+            descricao="Tiro de arco lançado, causa 6 pontos de dano!",
+            pontos_ataque=6
+        )
+
+    def usar(self, personagem_atual, alvo):
+        alvo._classe._pontos_vida -= self.pontos_ataque
+        return self.pontos_ataque, 1  # 1 = ataque
 
 #Arena : Classe que representa a arena de combate.
-#personagens : Lista de personagens que estão na arena. (Feito)
-#adicionar_personagem() : Método que adiciona um personagem à arena. (Feito)
-#remover_personagem() : Método que remove um personagem da arena. (Feito)
+#personagens : Lista de personagens que estão na arena. 
+#adicionar_personagem() : Método que adiciona um personagem à arena. 
+#remover_personagem() : Método que remove um personagem da arena. 
 #combate() : Método que simula o combate entre os personagens da arena,
 #retornando o vencedor.
 #As regras do combate serão as seguintes:
@@ -96,10 +160,12 @@ class D20(Dado):
 #Se o valor final de ataque for maior que o valor de defesa do oponente, o
 #ataque será bem sucedido.
 
-
+# para cura Personagem.usar_habilidade
+#para ataque Personagem.atacar
 class Arena:
-    def __init__(self, personagens=None):
-        self.personagens = personagens if personagens is not None else [] # se personagem ta na lista... e se é instancia de personagem
+    def __init__(self, personagens):
+        self.personagens = personagens
+        self.relatorio = {}  # Armazena informações do último combate
 
     def adicionar_personagem(self, personagem):
         self.personagens.append(personagem)
@@ -108,35 +174,35 @@ class Arena:
         if personagem in self.personagens:
             self.personagens.remove(personagem)
 
-    def combate(self):
-        if len(self.personagens) < 2:
-            print("Combate precisa de pelo menos dois personagens.") # Lançar erro
-            return None
+    def combate(self, personagens_combate=None):
+        if personagens_combate is None:
+            personagens_combate = self.personagens
 
-        vivos = self.personagens[:]
+        if len(personagens_combate) < 2:
+            raise ErroNumeroPersonagem("Combate precisa de pelo menos dois personagens.") 
+
+        vivos = personagens_combate[:]
+        turnos = 0
 
         while len(vivos) > 1:
+            turnos += 1
             for atacante in vivos[:]:
-                # Seleciona um oponente aleatório que não seja o próprio atacante
                 oponentes = [p for p in vivos if p != atacante]
                 if not oponentes:
                     break
-                alvo = random.choice(oponentes) # alvo recebe escolha de oponente aleatório 
-                # executar a função jogar da subclasse D20
-                d20 = random.randint(1, 20) # atribui o resultado aleatório a d20 ... mas não estou usando a classe D20...
-                ataque_total = d20 + atacante.ataque # soma 
+                alvo = random.choice(oponentes)
 
-                print(f"{atacante.nome} rola D20 = {d20} + ataque {atacante.ataque} = {ataque_total}")
-                print(f"{alvo.nome} tem defesa {alvo.defesa}")
+                print(f"{atacante.nome} ataca {alvo.nome}!")
 
-                if ataque_total > alvo.defesa:
-                    dano = atacante.ataque
-                    print(f"Ataque bem-sucedido! {alvo.nome} sofre {dano} de dano.")
+                dano = atacante.atacar(alvo)
+
+                if dano > 0:
+                    print(f"{alvo.nome} sofre {dano} de dano.")
                     alvo.sofrer_dano(dano)
                 else:
-                    print(f"{atacante.nome} errou o ataque em {alvo.nome}.")
+                    print(f"{atacante.nome} falhou ao causar dano em {alvo.nome}.")
 
-                if alvo.pontos_vida <= 0:
+                if alvo._classe._pontos_vida <= 0:
                     print(f"{alvo.nome} foi derrotado!")
                     vivos.remove(alvo)
 
@@ -145,7 +211,17 @@ class Arena:
 
         vencedor = vivos[0]
         print(f"\n{vencedor.nome} é o vencedor!")
+
+        self._relatorio = {
+            "vencedor": vencedor.nome,
+            "turnos": turnos,
+            "participantes": [p.nome for p in personagens_combate]
+        }
+
         return vencedor
+
+
+    
 
 
 

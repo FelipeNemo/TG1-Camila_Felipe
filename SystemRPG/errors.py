@@ -42,3 +42,25 @@ class ErroDadoAtaqueInvalido(Exception):
         self.__msg=mensagem
     def __str__(self):
         return "ErroClasseInvalida (" + self.__msg +")"
+    
+class ErroPersonagemInvalido(Exception):
+    """Existe elementos na lista que não são instancia da classe Personagem"""
+    def __init__(self, mensagem):
+        self.__msg=mensagem
+    def __str__(self):
+        return "ErroClasseInvalida (" + self.__msg +")" 
+
+class ErroNumeroPersonagem(Exception):
+    """Deve haver pelo menos dois personagens na batalha"""
+    def __init__(self, mensagem):
+        self.__msg=mensagem
+    def __str__(self):
+        return "ErroClasseInvalida (" + self.__msg +")"
+    
+class ErroHabilidadeNaoEncontrada(Exception):
+    """Habilidade não está no inventário"""
+    def __init__(self, mensagem):
+        self.__msg=mensagem
+    def __str__(self):
+        return "ErroClasseInvalida (" + self.__msg +")"
+    
