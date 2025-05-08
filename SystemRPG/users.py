@@ -1,10 +1,8 @@
-"""Classes para manipulação e gerenciamento de usuários e suas ações"""
+"""Classes para manipulação de personagens"""
 
-# Imports.
-from .gaming import *
-# Dado, D4, D6, D8, D12, D10, D20
+
+from .gaming import * # Classe Dados
 from .errors import *
-#from . import constantes as const
 import random
 from abc import ABC, abstractmethod
 
@@ -79,13 +77,16 @@ class Classe(ABC):
     def limite_habilidades(self, limite_habilidades):
         self._limite_habilidades = limite_habilidades
 
-    @abstractmethod # Não achei outra função abstrata ainda para essa classe... acho que vai ser algo relacionado aos danos nos atributos
-    def __str__(self): # Em classes que herdam o str só é preciso ser implementado na mãe
-        """Cada classe deve definir como usa suas habilidades."""
+    @abstractmethod
+    def exibir_status(self):
+        """Exibir os tatus atualizado"""
         pass
+   
+    def __str__(self):
+        return f"{self._nome} - Vida: {self._pontos_vida}, Ataque: {self._pontos_ataque}, Defesa: {self._pontos_defesa}"
 
     def __repr__(self):
-        # Representação técnica para debug
+        
         return f"Classe(nome={self._nome}, pontos_vida={self._pontos_vida}, pontos_ataque={self._pontos_ataque}, pontos_defesa={self._pontos_defesa})"
     
 #Guerreiro : Subclasse de  Classe  que representa um guerreiro. (Feito)
@@ -97,15 +98,15 @@ class Classe(ABC):
 class Guerreiro(Classe):
     def __init__(self):
         super().__init__(
-            #nome="Guerreiro",
             pontos_vida=10 + (8 * 5),  # 10 + (pontos_defesa * 5)
             dado_de_ataque=D12(),      # Dado de ataque é um D12
             pontos_ataque=6,
             pontos_defesa=8,
             limite_habilidades=2
         )
-    def __str__(self):
-        return f"{self._nome} - Vida: {self._pontos_vida}, Ataque: {self._pontos_ataque}, Defesa: {self._pontos_defesa}"
+
+    def exibir_status(self):
+        print(f"Vida: {self._pontos_vida} | Ataque: {self._pontos_ataque} | Defesa: {self._pontos_defesa}")
 
 
 #Mago : Subclasse de  Classe  que representa um mago.
@@ -117,7 +118,6 @@ class Guerreiro(Classe):
 class Mago(Classe):
     def __init__(self):
         super().__init__(
-            #nome="Mago",
             pontos_vida=8 + (3 * 2),  
             dado_de_ataque=D6(),
             pontos_ataque=10,
@@ -125,8 +125,10 @@ class Mago(Classe):
             limite_habilidades=5
         )
 
-    def __str__(self):
-        return f"{self._nome} - Vida: {self._pontos_vida}, Ataque: {self._pontos_ataque}, Defesa: {self._pontos_defesa}"
+    def exibir_status(self):
+        print(f"Vida: {self._pontos_vida} | Ataque: {self._pontos_ataque} | Defesa: {self._pontos_defesa}")
+
+
 #Ladino : Subclasse de  Classe  que representa um ladino.
 #pontos_vida : 6 + ( pontos_defesa * 3)
 #dado_de_ataque : D8.
@@ -136,7 +138,6 @@ class Mago(Classe):
 class Ladino(Classe):
     def __init__(self):
         super().__init__(
-            #nome="Ladino",
             pontos_vida=6 + (5 * 3),  
             dado_de_ataque=D8(),
             pontos_ataque=8,
@@ -144,8 +145,8 @@ class Ladino(Classe):
             limite_habilidades=3
         )
 
-    def __str__(self):
-        return f"{self._nome} - Vida: {self._pontos_vida}, Ataque: {self._pontos_ataque}, Defesa: {self._pontos_defesa}"
+    def exibir_status(self):
+        print(f"Vida: {self._pontos_vida} | Ataque: {self._pontos_ataque} | Defesa: {self._pontos_defesa}")
 
 #Personagem : Classe que representa um personagem do jogo. (Feito)
 #qntd_instancias : Atributo que representa a quantidade de objetos instanciados. (Feito)
@@ -178,11 +179,11 @@ class Personagem:
         return self._classe
 
     @classe.setter
-    def classe(self, nova_classe):
-        if isinstance(nova_classe, Classe):  # Aqui garante que é uma instância válida
-            self._classe = nova_classe
+    def classe(self, nome_classe):
+        if isinstance(nome_classe, Classe):  # Aqui garante que é uma instância válida
+            self._classe = nome_classe
         else:
-            raise ErroClasseInvalida("classe deve ser uma instância de Classe")
+            raise ErroClasseInvalida(f"Classe '{nome_classe}' não é reconhecida.")
 
     @property
     def inventario(self):
@@ -207,6 +208,9 @@ class Personagem:
     )
         
 # - Métodos:
+    # Agora chama o exibir_status da classe associada
+    def exibir_status(self):
+        self.classe.exibir_status()
     def esta_vivo(self):
         return self.classe.pontos_vida > 0
 # criar_personagem(): Cria o objeto personagem
@@ -225,12 +229,12 @@ class Personagem:
         elif nome_classe == "Ladino":
             classe = Ladino()
         else:
-            raise ErroClasseInvalida(f"Classe '{nome_classe}'deve ser uma instância de Classe.")
+            raise ErroClasseInvalida(f"Classe '{nome_classe}' não é reconhecida.")
 
+        # 2. Verifica o limite de habilidades
         # 2. Verifica o limite de habilidades
         if len(habilidades_raw) > classe.limite_habilidades:
             raise ErroLimiteInventario(f"A classe '{classe.nome}' permite no máximo {classe.limite_habilidades} habilidades, mas você tentou adicionar {len(habilidades_raw)}.")
-
         # 3. Monta o inventário
         inventario = []
         for habilidade_nome in habilidades_raw:

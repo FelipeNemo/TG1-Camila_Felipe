@@ -1,3 +1,6 @@
+"""Arquivo responsável por carregar personagens e tratamento de erros"""
+
+
 import csv
 from .combate import *
 from .users import *
@@ -17,8 +20,8 @@ def carregar_personagens(caminho_arquivo):
     try:
         with open(caminho_arquivo, "r", encoding="utf-8") as arquivo:
             conteudo = arquivo.read()
-            blocos = conteudo.split("\n\n")  # cada bloco representa um personagem
-
+            blocos = conteudo.split("\n\n")  # cada bloco representa um personagem e é separado por \n 
+            
             for bloco in blocos:
                 linhas = bloco.strip().split("\n")
                 nome = None
@@ -45,13 +48,14 @@ def carregar_personagens(caminho_arquivo):
                         #print(f"[DEBUG] Habilidade adicionada: {habilidade}")
 
                 if nome and classe and habilidades:
+                    #print(f"[DEBUG] Criando personagem: {nome}, {classe}, {habilidades}")
+                    habilidades = habilidades[:5]  # limitar a 5
                     personagem = Personagem.criar_personagem(nome, classe, habilidades)
                     if personagem:
                         personagens.append(personagem)
                     else:
-                        erros.append([nome, f"Classe inválida: {classe}"])
+                        erros.append([nome, f"Classe inválida: {nome} {classe} {habilidades}"])     
                     
-#print(f"[DEBUG] Criando personagem: {nome}, {classe}, {habilidades}")
                 # gaming.py class Habilidade usar()
                 # users.py class usar_habilidade(), atacar()
 

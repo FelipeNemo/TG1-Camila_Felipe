@@ -1,10 +1,10 @@
-"""Classes para manipulação e gerenciamento do RPG"""
+"""Classes para manipulação de ações dos personagens dentro do jogo"""
 
-# Imports.
+
 from .errors import *
-#from . import constantes as const
 import random
 from abc import ABC, abstractmethod
+
 
 # Dado : Classe abstrata que representa um dado de RPG. (Feito)
 # lados : Número de lados do dado. (Feito)
@@ -103,7 +103,6 @@ class Habilidade:
 #BolaDeFogo : Subclasse de  Habilidade  que representa uma bola de fogo.
 #descricao : "Uma bola de fogo que causa dano em área."
 #usar() : Método que simula o uso da habilidade, causando 10 dano.
-    
 class BolaDeFogo(Habilidade):
     def __init__(self):
         super().__init__(
@@ -133,7 +132,6 @@ class Cura(Habilidade):
 #Tiro de Arco : Subclasse de  Habilidade  que representa um tiro de arco.
 #descricao : "Um tiro de arco que causa dano em área."
 #usar() : Método que simula o uso da habilidade, causando 6 dano.
-
 class TiroArco(Habilidade):
     def __init__(self):
         super().__init__(

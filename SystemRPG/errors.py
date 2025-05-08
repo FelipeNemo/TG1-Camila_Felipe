@@ -1,6 +1,6 @@
-"""Modulo que implementa todas as classes de erro!"""
+"""Classes de erros do sistema"""
 
-#Class dado
+
 class NumeroLadosInvalido(Exception):
     """O número de lados deve ser maior que 0"""
     def __init__(self, mensagem):
@@ -63,4 +63,5 @@ class ErroHabilidadeNaoEncontrada(Exception):
         self.__msg=mensagem
     def __str__(self):
         return "ErroClasseInvalida (" + self.__msg +")"
+    
     

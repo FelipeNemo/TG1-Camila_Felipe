@@ -42,8 +42,8 @@ def main():
 
         else:
             print("Opção inválida. Tente novamente.")
-
-    r.salvar_csv("relatorio_combates.csv", r.get_relatorio_combates())
+        
+        r.salvar_csv("relatorio_combates.csv", relatorio)
 
 if __name__ == "__main__":
     main()
