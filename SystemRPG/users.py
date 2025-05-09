@@ -1,7 +1,7 @@
 """Classes para manipulação de personagens"""
 
 
-from .gaming import * # Classe Dados
+from .gaming import * 
 from .errors import *
 import random
 from abc import ABC, abstractmethod
@@ -264,10 +264,11 @@ class Personagem:
     def atacar(self, alvo):
         if self._inventario and random.random() < 0.5:
             # 50% de chance de usar uma habilidade
-            return self.usar_habilidade(alvo)
+            habilidade = random.choice(self.inventario)  # Escolhe uma habilidade aleatória
+            return self.usar_habilidade(habilidade, alvo)
         else:
             # Dano padrão: joga o dado de ataque e soma os pontos de ataque
-            dano_bruto = self._classe.dado_de_ataque.rolar() + self._classe.pontos_ataque
+            dano_bruto = self._classe.dado_de_ataque.jogar() + self._classe.pontos_ataque
             # Dano real é o dano bruto menos os pontos de defesa do alvo (mínimo 0)
             dano_real = max(0, dano_bruto - alvo._classe.pontos_defesa)
             # Aplica o dano ao alvo
