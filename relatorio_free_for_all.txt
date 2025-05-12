@@ -1,0 +1,11 @@
+atacante,alvo,dado_lancado,dano,status_atacante,status_alvo,sucesso
+Gandalf,Saruman,12,9,,,True
+Legolas,Gandalf,3,6,,,True
+Saruman,Legolas,6,7,,,True
+Gollum,Legolas,9,8,,,True
+Gandalf,Gollum,1,10,,,True
+Legolas,Gandalf,6,6,,,True
+Saruman,Legolas,7,6,,,True
+Gollum,Legolas,5,7,,,True
+Gandalf,Saruman,5,11,,,True
+Gollum,Gandalf,19,6,,,True

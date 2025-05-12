@@ -1,17 +1,19 @@
 """Arquivo responsável por carregar personagens e tratamento de erros"""
 
-
+# Tratar(Excluir habilidade que não é instanciada em Habilidade// remover itens que excedem o limite de habilidade da classe) os objetos personagens depois que o erro for lançado
 import csv
-from .combate import *
 from .users import *
 from .errors import *
+from .gaming import *
 
+# ------------------------------------
 
-def salvar_csv(nome_arquivo, dados):
+def salvar_log(nome_arquivo, dados):
     with open(nome_arquivo, mode='w', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(dados)
 
+# ------------------------------------
 def carregar_personagens(caminho_arquivo):
     personagens = []
     erros = []

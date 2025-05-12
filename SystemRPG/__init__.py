@@ -1,5 +1,7 @@
 #imports do pacote
-from .gaming import *
-from .errors import *
+
 from .loading import *
+from .users import *
+from .errors import *
+from .gaming import *
 from .combate import *

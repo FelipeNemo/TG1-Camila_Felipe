@@ -17,10 +17,11 @@
 
 #--------------------------------------------------------------------------------------------------------------------------------
 import SystemRPG as r
+
 def main():
     personagens, erros = r.carregar_personagens("Entrada/entrada.txt")
     if erros:
-        r.salvar_csv("erros.log", [["Personagem", "Erro"]] + erros)
+        r.salvar_log("erros.log", [["Personagem", "Erro"]] + erros)
 
     while True:
         print("\n=== MENU RPG ===")
@@ -31,24 +32,18 @@ def main():
         opcao = input("Escolha uma opção: ")
 
         if opcao == "1":
-            r.combate_entre_dois(personagens)
+            relatorio = r.combate_entre_dois(personagens)
+            r.salvar_csv("relatorio_entre_dois.txt", relatorio)
 
         elif opcao == "2":
-            r.combate_free_for_all(personagens)
-
+            relatorio = r.combate_free_for_all(personagens)
+            r.salvar_csv("relatorio_free_for_all.txt", relatorio)
         elif opcao == "0":
             print("Saindo do sistema...")
             break
 
         else:
             print("Opção inválida. Tente novamente.")
-        
-        r.salvar_csv("relatorio_combates.csv", relatorio)
 
 if __name__ == "__main__":
     main()
-
-#resultado_dado = r.Dado(6)
-
-
-#No final da execução, dois arquivos deverão ter sido gerados, um arquivo de relatório de combates, e um arquivo contendo os erros.

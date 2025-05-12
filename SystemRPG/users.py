@@ -1,9 +1,8 @@
 """Classes para manipulação de personagens"""
 
-
-from .gaming import * 
-from .errors import *
 import random
+from .errors import *
+from .gaming import *
 from abc import ABC, abstractmethod
 
 
@@ -144,6 +143,8 @@ class Ladino(Classe):
             pontos_defesa=5,
             limite_habilidades=3
         )
+        #checa habilidade 50% de uso
+        # quando eu for atacar roda o dado
 
     def exibir_status(self):
         print(f"Vida: {self._pontos_vida} | Ataque: {self._pontos_ataque} | Defesa: {self._pontos_defesa}")
@@ -211,8 +212,9 @@ class Personagem:
     # Agora chama o exibir_status da classe associada
     def exibir_status(self):
         self.classe.exibir_status()
+
     def esta_vivo(self):
-        return self.classe.pontos_vida > 0
+        return self.classe.pontos_vida >= 0
 # criar_personagem(): Cria o objeto personagem
     @staticmethod 
     def criar_personagem(nome, nome_classe, habilidades_raw):
@@ -251,9 +253,14 @@ class Personagem:
     def usar_habilidade(self, habilidade, alvo):
         if habilidade not in self._inventario:
             raise ErroHabilidadeNaoEncontrada("Habilidade não está no inventário.")
-        return habilidade.usar(self, alvo)
 
-    
+        dano = habilidade.usar(self, alvo)
+        # Verifica se não é Tiro de Arco antes de remover
+        if not isinstance(habilidade, TiroArco):
+            self._inventario.remove(habilidade)
+        return dano
+
+
 #atacar(alvo : Personagem) : Método que simula um ataque do personagem,
 #retornando o dano causado.
 #Ao atacar, o personagem deve, antes de jogar o dado de ataque, verificar se não
@@ -262,8 +269,7 @@ class Personagem:
 #de 50% de usar uma habilidade.
 #O dano padrão de qualquer personagem é realizado com o dado de ataque da classe.
     def atacar(self, alvo):
-        if self._inventario and random.random() < 0.5:
-            # 50% de chance de usar uma habilidade
+        if self._inventario and random.random() < 0.5: # Se tem a hab.tem 50% de chance de usar
             habilidade = random.choice(self.inventario)  # Escolhe uma habilidade aleatória
             return self.usar_habilidade(habilidade, alvo)
         else:

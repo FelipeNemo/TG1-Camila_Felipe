@@ -1,23 +1,11 @@
 
 O que falta:
-
-
-gaminig.py
-Habilidade 
-método usar()
-classe Arena
-método combate_entre_dois()
-método combate_free_for_all()
-método get_relatorio_combates()
+quando o personagem entra em uma Arena a vida dele deve ser resetada... 
+se eu coloco ele para duas batalhas seguidas com o sistema rodando corre risco de ele entrar com -2 de vida... 
 
 loading.py
 Descartar habilidades inválidas.
 Manter personagens com mais de 5 habilidades 
-
-
-
-
-
 
 
 dataviz.py
