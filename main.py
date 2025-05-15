@@ -13,15 +13,14 @@
 # O sistema deve ser capaz de lidar com esses erros e registrar as informações em um arquivo de log.
 
 
-# teste obj----------------------------------------------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------------------------------------------------------
 import SystemRPG as r
+#import gameplay as y
 
 def main():
     personagens, erros = r.carregar_personagens("Entrada/entrada.txt")
-    if erros:
-        r.salvar_log("erros.log", [["Personagem", "Erro"]] + erros)
+    #if erros:
+        #r.salvar_log("erros.log", [["Personagem", "Erro"]] + erros)
 
     while True:
         print("\n=== MENU RPG ===")
@@ -33,15 +32,16 @@ def main():
 
         if opcao == "1":
             if erros:
-                r.salvar_log("erros.log", [["Personagem", "Erro"]] + erros)
+                r.salvar_log("reports/erros.log", [["Personagem", "Erro"]] + erros)
             relatorio = r.combate_entre_dois(personagens)
-            r.salvar_csv("relatorio_entre_dois.csv", relatorio)
+            r.salvar_csv("reports/relatorio_entre_dois.csv", relatorio)
+            #y.mostrar_batalha(relatorio, sprites)
 
         elif opcao == "2":
             if erros:
-                r.salvar_log("erros.log", [["Personagem", "Erro"]] + erros)
+                r.salvar_log("reports/erros.log", [["Personagem", "Erro"]] + erros)
             relatorio = r.combate_free_for_all(personagens)
-            r.salvar_csv("relatorio_free_for_all.csv", relatorio)
+            r.salvar_csv("reports/relatorio_free_for_all.csv", relatorio)
         elif opcao == "0":
             print("Saindo do sistema...")
             break

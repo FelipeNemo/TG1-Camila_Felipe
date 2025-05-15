@@ -1,4 +1,0 @@
-nome atacante,hp atacante,nome alvo,hp alvo,dado lancado,dano,sucesso,esta vivo
-Gandalf,14,Saruman,4,1,10,True,True
-Saruman,4,Gandalf,4,19,10,True,True
-Gandalf,4,Saruman,-5,13,9,True,False

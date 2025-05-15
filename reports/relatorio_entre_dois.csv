@@ -1,0 +1,4 @@
+nome atacante,hp atacante,nome alvo,hp alvo,dado lancado,dano,sucesso,esta vivo,estado geral
+Gollum,21,Gandalf,1,5,13,True,True,"[{'nome': 'Gollum', 'hp': 21, 'vivo': True}, {'nome': 'Gandalf', 'hp': 1, 'vivo': True}]"
+Gandalf,1,Gollum,10,3,11,True,True,"[{'nome': 'Gollum', 'hp': 10, 'vivo': True}, {'nome': 'Gandalf', 'hp': 1, 'vivo': True}]"
+Gollum,10,Gandalf,-5,1,6,True,False,"[{'nome': 'Gollum', 'hp': 10, 'vivo': True}, {'nome': 'Gandalf', 'hp': -5, 'vivo': False}]"

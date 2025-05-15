@@ -12,7 +12,7 @@ import csv
 
 def salvar_csv(nome_arquivo, relatorio):
     with open(nome_arquivo, mode='w', newline='', encoding='utf-8') as arquivo:
-        campos = ['nome atacante','hp atacante', 'nome alvo', 'hp alvo', 'dado lancado','dano', 'sucesso', 'esta vivo'] # 'personagens'
+        campos = ['nome atacante','hp atacante', 'nome alvo', 'hp alvo', 'dado lancado','dano', 'sucesso', 'esta vivo', 'estado geral'] # 
         writer = csv.DictWriter(arquivo, fieldnames=campos)
         writer.writeheader()
         for linha in relatorio:
@@ -196,6 +196,15 @@ class Arena:
     def remover_personagem(self, personagem):
         if personagem in self.personagens:
             self.personagens.remove(personagem)
+
+    # status de personagens mesmo que não sejam atacantes/alvos
+    def _estado_geral_personagens(self):
+        return [{
+        'nome': p.nome,
+        'hp': p._classe.pontos_vida,
+        'vivo': p.esta_vivo()
+    } for p in self.personagens]
+
   
     def combate(self):
         self.relatorio = []  # Reset no relatório a cada combate
@@ -231,7 +240,6 @@ class Arena:
                         resultado = f"causou {dano} de dano"
 
                     self.relatorio.append({
-                        #'personagens': self.personagens,
                         'nome atacante': atacante.nome,
                         'hp atacante' : atacante._classe.pontos_vida,
                         'nome alvo': alvo.nome,
@@ -239,9 +247,8 @@ class Arena:
                         'dado lancado': ataque_dado, 
                         'dano': dano,
                         'sucesso': True,
-                        'esta vivo': alvo.esta_vivo()
-                        #'status_atacante': atacante.exibir_status(),
-                        #'status_alvo': alvo.exibir_status(),
+                        'esta vivo': alvo.esta_vivo(),
+                        'estado geral': self._estado_geral_personagens()
                     })
                     if tipo == "cura":
                         print(f"{atacante.get_status()} {acao} e {resultado}.")
@@ -250,7 +257,6 @@ class Arena:
                 
                 else:
                     self.relatorio.append({
-                        #'personagens': self.personagens, # ._classe.pontos_vida
                         'nome atacante': atacante.nome,
                         'hp atacante' : atacante._classe.pontos_vida,
                         'nome alvo': alvo.nome,
@@ -258,7 +264,9 @@ class Arena:
                         'dado lancado': ataque_dado, 
                         'dano': 0,
                         'sucesso': False,
-                        'esta vivo': alvo.esta_vivo()
+                        'esta vivo': alvo.esta_vivo(),
+                        'estado geral': self._estado_geral_personagens()
+
                     })
                     print(f"{atacante.get_status()} falhou ao atacar {alvo.get_status()}.")
         # Após o combate, determina o vencedor
