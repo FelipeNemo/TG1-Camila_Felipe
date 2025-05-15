@@ -32,12 +32,16 @@ def main():
         opcao = input("Escolha uma opção: ")
 
         if opcao == "1":
+            if erros:
+                r.salvar_log("erros.log", [["Personagem", "Erro"]] + erros)
             relatorio = r.combate_entre_dois(personagens)
-            r.salvar_csv("relatorio_entre_dois.txt", relatorio)
+            r.salvar_csv("relatorio_entre_dois.csv", relatorio)
 
         elif opcao == "2":
+            if erros:
+                r.salvar_log("erros.log", [["Personagem", "Erro"]] + erros)
             relatorio = r.combate_free_for_all(personagens)
-            r.salvar_csv("relatorio_free_for_all.txt", relatorio)
+            r.salvar_csv("relatorio_free_for_all.csv", relatorio)
         elif opcao == "0":
             print("Saindo do sistema...")
             break

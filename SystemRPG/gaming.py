@@ -9,13 +9,17 @@ import csv
 
 # ------------------------------------
 
+
 def salvar_csv(nome_arquivo, relatorio):
     with open(nome_arquivo, mode='w', newline='', encoding='utf-8') as arquivo:
-        campos = ['atacante', 'alvo','dado_lancado', 'dano', 'status_atacante', 'status_alvo', 'sucesso']
+        campos = ['nome atacante','hp atacante', 'nome alvo', 'hp alvo', 'dado lancado','dano', 'sucesso', 'esta vivo'] # 'personagens'
         writer = csv.DictWriter(arquivo, fieldnames=campos)
-        writer.writeheader()  # Escreve a linha de cabeçalho
+        writer.writeheader()
         for linha in relatorio:
-            writer.writerow(linha)  # Escreve cada linha do relatório
+            linha['nome atacante'] = str(linha['nome atacante']) if linha['nome atacante'] is not None else ''
+            linha['nome alvo'] = str(linha['nome alvo']) if linha['nome alvo'] is not None else ''
+            writer.writerow(linha)
+
 
 # ------------------------------------
 
@@ -99,13 +103,15 @@ class D20(Dado):
 #pontos_ataque : Pontos de ataque da habilidade.
 #usar() : Método que simula o uso da habilidade.
 class Habilidade:
-    def __init__(self, descricao, pontos_ataque):
+    def __init__(self, descricao, pontos_ataque, tipo):
         self.nome = self.__class__.__name__ 
         self.descricao = descricao
         self.pontos_ataque = pontos_ataque
+        self.tipo = tipo  # "ataque", "cura", etc.
+
 
     def usar(self, personagem_atual, alvo):
-        print(f"Habilidade {self.__class__.__name__ } foi usada")
+            print(f"Habilidade {self.__class__.__name__ } foi usada")
 
     def __str__(self):
         return f"{self.nome}: (Poder de ataque: {self.pontos_ataque})"
@@ -119,12 +125,13 @@ class BolaDeFogo(Habilidade):
     def __init__(self):
         super().__init__(
             descricao="Bola de fogo lançada, causa 10 pontos de dano!",
-            pontos_ataque=10
+            pontos_ataque=10,
+            tipo = "ataque"
         )
 
     def usar(self, personagem_atual, alvo): # Checar na lista a se tem habilidade e usar Fazer o tratamento aqui
         alvo._classe._pontos_vida -= self.pontos_ataque
-        return self.pontos_ataque  # 1 = ataque
+        return self.pontos_ataque
 
 #Cura : Subclasse de  Habilidade  que representa uma cura.
 #descricao : "Uma cura que recupera 10 pontos de vida."
@@ -133,12 +140,13 @@ class Cura(Habilidade):
     def __init__(self):
         super().__init__(
             descricao="Magia de cura lançada, usuário recebe 10 pontos de vida!",
-            pontos_ataque=10 
+            pontos_ataque=10,
+            tipo = "cura"
         )                     
 
     def usar(self, personagem_atual, alvo):
         personagem_atual._classe._pontos_vida += self.pontos_ataque
-        return self.pontos_ataque # 0 = cura
+        return self.pontos_ataque
 
 
 #Tiro de Arco : Subclasse de  Habilidade  que representa um tiro de arco.
@@ -148,7 +156,9 @@ class TiroArco(Habilidade):
     def __init__(self):
         super().__init__(
             descricao="Tiro de arco lançado, causa 6 pontos de dano!",
-            pontos_ataque=6
+            pontos_ataque=6,
+            tipo = "ataque"
+            
         )
 
     def usar(self, personagem_atual, alvo):
@@ -172,7 +182,7 @@ class TiroArco(Habilidade):
 
 # para cura Personagem.usar_habilidade
 #para ataque Personagem.atacar
-    
+
 class Arena:
     def __init__(self, personagens):
         self.personagens = personagens
@@ -181,13 +191,14 @@ class Arena:
 
     def adicionar_personagem(self, personagem):
         self.personagens.append(personagem)
+        print(self.personagens)
 
     def remover_personagem(self, personagem):
         if personagem in self.personagens:
             self.personagens.remove(personagem)
   
     def combate(self):
-        self.relatorio = [] # Reset no relatório a cada combate
+        self.relatorio = []  # Reset no relatório a cada combate
 
         # Enquanto houver mais de um personagem vivo, o combate continua
         while len([p for p in self.personagens if p.esta_vivo()]) > 1:
@@ -197,53 +208,66 @@ class Arena:
                     continue
                 # Escolhe aleatoriamente um alvo vivo diferente do atacante
                 alvos_vivos = [p for p in self.personagens if p != atacante and p.esta_vivo()]
-                #  Se não houver mais alvos, o combate termina
+                # Se não houver mais alvos, o combate termina
                 if not alvos_vivos:
                     break
+                # Escolhe o alvo randomicamente
                 alvo = random.choice(alvos_vivos)
+
                 # Usa o dado de 20 lados para o ataque
                 ataque_dado = self.dado_20.jogar()
+
                 # Soma o modificador de ataque da classe do atacante
                 total_ataque = ataque_dado + atacante._classe.pontos_ataque
 
-                if total_ataque > alvo._classe.pontos_defesa: # # Se o ataque for bem-sucedido
-                    dano = atacante.atacar(alvo)  #calcula o dano
-                    # Registrando o ataque no relatório
-                    self.relatorio.append({
-                        'atacante': atacante.nome,
-                        'alvo': alvo.nome,
-                        'dado_lancado': ataque_dado,
-                        'dano': dano,
-                        'status_atacante': atacante.exibir_status(),
-                        'status_alvo': alvo.exibir_status(),
-                        'sucesso': True
-                    })
-                    print(f"{atacante.nome} atacou {alvo.nome} e causou {dano} de dano!")
-                else:
-                     # Registrando a falha no relatório
-                    self.relatorio.append({
-                        'atacante': atacante.nome,
-                        'alvo': alvo.nome,
-                        'dado_lancado': ataque_dado,
-                        'dano': 0,
-                        'status_atacante': atacante.exibir_status(),
-                        'status_alvo': alvo.exibir_status(),
-                        'sucesso': False
-                    })
-                    print(f"{atacante.nome} tentou atacar {alvo.nome}, mas falhou!")
+                if total_ataque > alvo._classe.pontos_defesa:  # Se o ataque for bem-sucedido
 
+                    dano, tipo  = atacante.atacar(alvo)
+                    if tipo == "cura":
+                        acao = "curou"
+                        resultado = f"restaurou {dano} de vida"
+                    else:
+                        acao = "atacou"
+                        resultado = f"causou {dano} de dano"
+
+                    self.relatorio.append({
+                        #'personagens': self.personagens,
+                        'nome atacante': atacante.nome,
+                        'hp atacante' : atacante._classe.pontos_vida,
+                        'nome alvo': alvo.nome,
+                        'hp alvo': alvo._classe.pontos_vida,
+                        'dado lancado': ataque_dado, 
+                        'dano': dano,
+                        'sucesso': True,
+                        'esta vivo': alvo.esta_vivo()
+                        #'status_atacante': atacante.exibir_status(),
+                        #'status_alvo': alvo.exibir_status(),
+                    })
+                    if tipo == "cura":
+                        print(f"{atacante.get_status()} {acao} e {resultado}.")
+                    else:
+                        print(f"{atacante.get_status()} {acao} {alvo.get_status()} e {resultado}.")
+                
+                else:
+                    self.relatorio.append({
+                        #'personagens': self.personagens, # ._classe.pontos_vida
+                        'nome atacante': atacante.nome,
+                        'hp atacante' : atacante._classe.pontos_vida,
+                        'nome alvo': alvo.nome,
+                        'hp alvo': alvo._classe.pontos_vida,
+                        'dado lancado': ataque_dado, 
+                        'dano': 0,
+                        'sucesso': False,
+                        'esta vivo': alvo.esta_vivo()
+                    })
+                    print(f"{atacante.get_status()} falhou ao atacar {alvo.get_status()}.")
+        # Após o combate, determina o vencedor
         vencedor = next(p for p in self.personagens if p.esta_vivo())
         return vencedor
     
     def get_relatorio_combates(self):
-                # Aqui você pode usar o método exibir_status para exibir o status de todos os personagens
-        for combate in self.relatorio:
-            atacante = next(p for p in self.personagens if p.nome == combate['atacante'])
-            alvo = next(p for p in self.personagens if p.nome == combate['alvo'])
-
-            # Exibe o status dos personagens após cada combate
-            print(f"Status após o combate: {atacante.exibir_status()} VS {alvo.exibir_status()}")
         return self.relatorio
+
     
 
 

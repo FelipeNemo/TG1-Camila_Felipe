@@ -85,7 +85,6 @@ class Classe(ABC):
         return f"{self._nome} - Vida: {self._pontos_vida}, Ataque: {self._pontos_ataque}, Defesa: {self._pontos_defesa}"
 
     def __repr__(self):
-        
         return f"Classe(nome={self._nome}, pontos_vida={self._pontos_vida}, pontos_ataque={self._pontos_ataque}, pontos_defesa={self._pontos_defesa})"
     
 #Guerreiro : Subclasse de  Classe  que representa um guerreiro. (Feito)
@@ -105,8 +104,7 @@ class Guerreiro(Classe):
         )
 
     def exibir_status(self):
-        print(f"Vida: {self._pontos_vida} | Ataque: {self._pontos_ataque} | Defesa: {self._pontos_defesa}")
-
+        return f"Vida: {self._pontos_vida} | Ataque: {self._pontos_ataque} | Defesa: {self._pontos_defesa}"
 
 #Mago : Subclasse de  Classe  que representa um mago.
 #pontos_vida : 8 + ( pontos_defesa * 2)
@@ -125,8 +123,7 @@ class Mago(Classe):
         )
 
     def exibir_status(self):
-        print(f"Vida: {self._pontos_vida} | Ataque: {self._pontos_ataque} | Defesa: {self._pontos_defesa}")
-
+        return f"Vida: {self._pontos_vida} | Ataque: {self._pontos_ataque} | Defesa: {self._pontos_defesa}"
 
 #Ladino : Subclasse de  Classe  que representa um ladino.
 #pontos_vida : 6 + ( pontos_defesa * 3)
@@ -147,7 +144,7 @@ class Ladino(Classe):
         # quando eu for atacar roda o dado
 
     def exibir_status(self):
-        print(f"Vida: {self._pontos_vida} | Ataque: {self._pontos_ataque} | Defesa: {self._pontos_defesa}")
+        return f"Vida: {self._pontos_vida} | Ataque: {self._pontos_ataque} | Defesa: {self._pontos_defesa}"
 
 #Personagem : Classe que representa um personagem do jogo. (Feito)
 #qntd_instancias : Atributo que representa a quantidade de objetos instanciados. (Feito)
@@ -209,12 +206,7 @@ class Personagem:
     )
         
 # - Métodos:
-    # Agora chama o exibir_status da classe associada
-    def exibir_status(self):
-        self.classe.exibir_status()
-
-    def esta_vivo(self):
-        return self.classe.pontos_vida >= 0
+    
 # criar_personagem(): Cria o objeto personagem
     @staticmethod 
     def criar_personagem(nome, nome_classe, habilidades_raw):
@@ -234,7 +226,6 @@ class Personagem:
             raise ErroClasseInvalida(f"Classe '{nome_classe}' não é reconhecida.")
 
         # 2. Verifica o limite de habilidades
-        # 2. Verifica o limite de habilidades
         if len(habilidades_raw) > classe.limite_habilidades:
             raise ErroLimiteInventario(f"A classe '{classe.nome}' permite no máximo {classe.limite_habilidades} habilidades, mas você tentou adicionar {len(habilidades_raw)}.")
         # 3. Monta o inventário
@@ -253,12 +244,10 @@ class Personagem:
     def usar_habilidade(self, habilidade, alvo):
         if habilidade not in self._inventario:
             raise ErroHabilidadeNaoEncontrada("Habilidade não está no inventário.")
-
         dano = habilidade.usar(self, alvo)
-        # Verifica se não é Tiro de Arco antes de remover
         if not isinstance(habilidade, TiroArco):
             self._inventario.remove(habilidade)
-        return dano
+        return dano, habilidade.tipo
 
 
 #atacar(alvo : Personagem) : Método que simula um ataque do personagem,
@@ -267,19 +256,22 @@ class Personagem:
 #utilizará uma habilidade.
 #Enquanto houver habilidades no inventário, o personagem deve ter uma chance
 #de 50% de usar uma habilidade.
-#O dano padrão de qualquer personagem é realizado com o dado de ataque da classe.
+#O dano padrão de qualquer personagem é realizado com o dado de ataque da classe.     
     def atacar(self, alvo):
-        if self._inventario and random.random() < 0.5: # Se tem a hab.tem 50% de chance de usar
-            habilidade = random.choice(self.inventario)  # Escolhe uma habilidade aleatória
-            return self.usar_habilidade(habilidade, alvo)
+        if self._inventario and random.random() < 0.5:
+            habilidade = random.choice(self.inventario)
+            dano, tipo = self.usar_habilidade(habilidade, alvo)
+            return dano, tipo
         else:
-            # Dano padrão: joga o dado de ataque e soma os pontos de ataque
             dano_bruto = self._classe.dado_de_ataque.jogar() + self._classe.pontos_ataque
-            # Dano real é o dano bruto menos os pontos de defesa do alvo (mínimo 0)
             dano_real = max(0, dano_bruto - alvo._classe.pontos_defesa)
-            # Aplica o dano ao alvo
             alvo._classe.pontos_vida -= dano_real
-            return dano_real
-
+            return dano_real, "ataque"
     
+    def get_status(self):
+        return f"- {self._nome}: {self.classe.exibir_status()} | Inventário({[habilidade.__class__.__name__ for habilidade in self._inventario]})"
+
+    def esta_vivo(self):
+        return self.classe.pontos_vida > 0
+
 

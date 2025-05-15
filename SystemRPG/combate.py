@@ -17,16 +17,16 @@ def combate_entre_dois(personagens):
     p2 = personagens[idx2]
 
     print(f"\n * {p1.nome}")
-    p1.exibir_status()
+    p1.get_status()
 
     print(f"\n * {p2.nome}")
-    p2.exibir_status()
+    p2.get_status()
 
     # Cria arena apenas com os dois
     arena = Arena([p1, p2])
     vencedor = arena.combate()
 
-    print(f"\n🏆 Vencedor: {vencedor.nome} {vencedor.exibir_status()}!")
+    print(f"\n🏆 Vencedor: {vencedor.nome} {vencedor.get_status()}!")
     return arena.relatorio
 
 
@@ -35,7 +35,7 @@ def combate_free_for_all(personagens):
     print("Escolha os personagens que participarão do combate:")
     for i, p in enumerate(personagens):
         print(f"{i} - {p.nome} ({p.classe})")
-        p.exibir_status()
+        p.get_status()
 
     indices_escolhidos = input("\nDigite os números dos personagens separados por vírgula (ex: 0,2,3):\n")
     indices_escolhidos = [int(i.strip()) for i in indices_escolhidos.split(',')]
@@ -46,13 +46,13 @@ def combate_free_for_all(personagens):
     print("\nEscolha qual personagem você deseja controlar:")
     for i, p in enumerate(arena.personagens):
         print(f"{i} - {p.nome} ({p.classe})")
-        p.exibir_status()
+        p.get_status()
 
     jogador_idx = int(input("\nDigite o número do seu personagem:\n"))
     jogador = arena.personagens[jogador_idx]
 
     print(f"\nVocê escolheu: {jogador.nome} ({jogador.classe})")
-    jogador.exibir_status()
+    jogador.get_status()
 
     # Inicia o combate automático (sem perguntar se usa habilidade)
     vencedor = arena.combate()
