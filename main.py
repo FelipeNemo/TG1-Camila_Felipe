@@ -14,11 +14,11 @@
 
 
 
-import SystemRPG as r
+import systemRPG as r
 #import gameplay as y
 
 def main():
-    personagens, erros = r.carregar_personagens("Entrada/entrada.txt")
+    #personagens, erros = r.carregar_personagens("Entrada/entrada.txt")
     #if erros:
         #r.salvar_log("erros.log", [["Personagem", "Erro"]] + erros)
 
@@ -31,6 +31,7 @@ def main():
         opcao = input("Escolha uma opção: ")
 
         if opcao == "1":
+            personagens, erros = r.carregar_personagens("Entrada/entrada.txt")
             if erros:
                 r.salvar_log("reports/erros.log", [["Personagem", "Erro"]] + erros)
             relatorio = r.combate_entre_dois(personagens)
@@ -38,6 +39,7 @@ def main():
             #y.mostrar_batalha(relatorio, sprites)
 
         elif opcao == "2":
+            personagens, erros = r.carregar_personagens("Entrada/entrada.txt")
             if erros:
                 r.salvar_log("reports/erros.log", [["Personagem", "Erro"]] + erros)
             relatorio = r.combate_free_for_all(personagens)

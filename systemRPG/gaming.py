@@ -204,10 +204,22 @@ class Arena:
         'hp': p._classe.pontos_vida,
         'vivo': p.esta_vivo()
     } for p in self.personagens]
-
   
     def combate(self):
         self.relatorio = []  # Reset no relatório a cada combate
+
+        # Adiciona status inicial dos personagens
+        self.relatorio.append({
+            'nome atacante': None,
+            'hp atacante': None,
+            'nome alvo': None,
+            'hp alvo': None,
+            'dado lancado': None,
+            'dano': None,
+            'sucesso': None,
+            'esta vivo': None,
+            'estado geral': self._estado_geral_personagens()
+        })
 
         # Enquanto houver mais de um personagem vivo, o combate continua
         while len([p for p in self.personagens if p.esta_vivo()]) > 1:
