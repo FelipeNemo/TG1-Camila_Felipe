@@ -1,7 +1,5 @@
 nome atacante,hp atacante,nome alvo,hp alvo,dado lancado,dano,sucesso,esta vivo,estado geral
-,,,,,,,,"[{'nome': 'Aragorn', 'hp': 50, 'vivo': True}, {'nome': 'Gandalf', 'hp': 14, 'vivo': True}]"
-Aragorn,60,Gandalf,14,7,10,True,True,"[{'nome': 'Aragorn', 'hp': 60, 'vivo': True}, {'nome': 'Gandalf', 'hp': 14, 'vivo': True}]"
-Gandalf,14,Aragorn,56,1,4,True,True,"[{'nome': 'Aragorn', 'hp': 56, 'vivo': True}, {'nome': 'Gandalf', 'hp': 14, 'vivo': True}]"
-Aragorn,56,Gandalf,9,2,5,True,True,"[{'nome': 'Aragorn', 'hp': 56, 'vivo': True}, {'nome': 'Gandalf', 'hp': 9, 'vivo': True}]"
-Gandalf,9,Aragorn,52,13,4,True,True,"[{'nome': 'Aragorn', 'hp': 52, 'vivo': True}, {'nome': 'Gandalf', 'hp': 9, 'vivo': True}]"
-Aragorn,52,Gandalf,-4,18,13,True,False,"[{'nome': 'Aragorn', 'hp': 52, 'vivo': True}, {'nome': 'Gandalf', 'hp': -4, 'vivo': False}]"
+,,,,,,,,"[{'nome': 'Gandalf', 'hp': 14, 'vivo': True}, {'nome': 'Saruman', 'hp': 14, 'vivo': True}]"
+Gandalf,14,Saruman,4,18,10,True,True,"[{'nome': 'Gandalf', 'hp': 14, 'vivo': True}, {'nome': 'Saruman', 'hp': 4, 'vivo': True}]"
+Saruman,4,Gandalf,4,9,10,True,True,"[{'nome': 'Gandalf', 'hp': 4, 'vivo': True}, {'nome': 'Saruman', 'hp': 4, 'vivo': True}]"
+Gandalf,4,Saruman,-8,3,12,True,False,"[{'nome': 'Gandalf', 'hp': 4, 'vivo': True}, {'nome': 'Saruman', 'hp': -8, 'vivo': False}]"

@@ -48,7 +48,7 @@ def combate_free_for_all(personagens):
         print(f"{i} - {p.nome} ({p.classe})")
         p.get_status()
 
-    jogador_idx = int(input("\nDigite o número do seu personagem:\n"))
+    jogador_idx = int(input("\nDigite o número do personagem que você apostará:\n"))
     jogador = arena.personagens[jogador_idx]
 
     print(f"\nVocê escolheu: {jogador.nome} ({jogador.classe})")

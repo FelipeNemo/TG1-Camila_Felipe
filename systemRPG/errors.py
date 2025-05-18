@@ -20,49 +20,49 @@ class ErroLimiteInventario(Exception): # Saruman
     def __init__(self, mensagem):
         self.__msg=mensagem
     def __str__(self):
-        return "ErroClasseInvalida (" + self.__msg +")" 
+        return "ErroLimiteInventario (" + self.__msg +")" 
 
 class ErroHabilidadeInvalida(Exception): # Frodo
     """Habilidade não é válida - ou seja não possue classe com o nome da habilidade"""
     def __init__(self, mensagem):
         self.__msg=mensagem
     def __str__(self):
-        return "ErroClasseInvalida (" + self.__msg +")"  
+        return "ErroHabilidadeInvalida (" + self.__msg +")"  
 
 class ErroInventarioVazio(Exception):
     """Caso o inventário esteja vazio"""
     def __init__(self, mensagem):
         self.__msg=mensagem
     def __str__(self):
-        return "ErroClasseInvalida (" + self.__msg +")"  
+        return "ErroInventarioVazio (" + self.__msg +")"  
 
 class ErroDadoAtaqueInvalido(Exception):
     """Dado de ataque deve ser instancia da classe dado"""
     def __init__(self, mensagem):
         self.__msg=mensagem
     def __str__(self):
-        return "ErroClasseInvalida (" + self.__msg +")"
+        return "ErroDadoAtaqueInvalido (" + self.__msg +")"
     
 class ErroPersonagemInvalido(Exception):
     """Existe elementos na lista que não são instancia da classe Personagem"""
     def __init__(self, mensagem):
         self.__msg=mensagem
     def __str__(self):
-        return "ErroClasseInvalida (" + self.__msg +")" 
+        return "ErroPersonagemInvalido (" + self.__msg +")" 
 
 class ErroNumeroPersonagem(Exception):
     """Deve haver pelo menos dois personagens na batalha"""
     def __init__(self, mensagem):
         self.__msg=mensagem
     def __str__(self):
-        return "ErroClasseInvalida (" + self.__msg +")"
+        return "ErroNumeroPersonagem (" + self.__msg +")"
     
 class ErroHabilidadeNaoEncontrada(Exception):
     """Habilidade não está no inventário"""
     def __init__(self, mensagem):
         self.__msg=mensagem
     def __str__(self):
-        return "ErroClasseInvalida (" + self.__msg +")" 
+        return "ErroHabilidadeNaoEncontrada (" + self.__msg +")" 
     
 class ErroLeituraArquivo(Exception):
     """Erro ao ler o arquivo"""

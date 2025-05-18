@@ -13,7 +13,6 @@ from abc import ABC, abstractmethod
 #pontos_ataque : Pontos de ataque da classe. (Feito)
 #pontos_defesa : Pontos de defesa da classe. (Feito)
 #limite_habilidades : Limite de habilidades que o personagem pode ter. (Feito)
-
 class Classe(ABC):
     def __init__(self, pontos_vida, dado_de_ataque, pontos_ataque, pontos_defesa, limite_habilidades):
         self._nome = self.__class__.__name__  # define o nome com base na classe
@@ -47,7 +46,8 @@ class Classe(ABC):
     def dado_de_ataque(self, dado_de_ataque):
         if not isinstance(dado_de_ataque, Dado):
             raise ErroDadoAtaqueInvalido("dado_de_ataque deve ser uma instância das subclasses de Dado.")
-        self._dado_de_ataque = dado_de_ataque
+        else:
+            self._dado_de_ataque = dado_de_ataque
 
 
     @property
@@ -71,14 +71,25 @@ class Classe(ABC):
     @property
     def limite_habilidades(self):
         return self._limite_habilidades
-    
+     
     @limite_habilidades.setter 
     def limite_habilidades(self, limite_habilidades):
+        if not isinstance(limite_habilidades, int):
+            raise ErroLimiteInventario("limite_habilidades deve ser um número inteiro.")
+        if limite_habilidades > self.limite_habilidades_padrao():
+            raise ErroLimiteInventario(
+                f"{self.__class__.__name__} não pode ter mais que {self.limite_habilidades_padrao()} habilidades.")
         self._limite_habilidades = limite_habilidades
+
 
     @abstractmethod
     def exibir_status(self):
         """Exibir os tatus atualizado"""
+        pass
+
+    @abstractmethod
+    def limite_habilidades_padrao(self):
+        """Cada subclasse deve retornar seu limite fixo de habilidades"""
         pass
    
     def __str__(self):
@@ -88,11 +99,11 @@ class Classe(ABC):
         return f"Classe(nome={self._nome}, pontos_vida={self._pontos_vida}, pontos_ataque={self._pontos_ataque}, pontos_defesa={self._pontos_defesa})"
     
 #Guerreiro : Subclasse de  Classe  que representa um guerreiro. (Feito)
-#pontos_vida : 10 + ( pontos_defesa * 5). (Feito)
-#dado_de_ataque : D12. (Feito)
-#pontos_ataque : 6 (Feito)
-#pontos_defesa : 8 (Feito)
-#limite_habilidades : 2 (Feito)
+#pontos_vida : 10 + ( pontos_defesa * 5).
+#dado_de_ataque : D12. 
+#pontos_ataque : 6 
+#pontos_defesa : 8 
+#limite_habilidades : 2 
 class Guerreiro(Classe):
     def __init__(self):
         super().__init__(
@@ -103,10 +114,13 @@ class Guerreiro(Classe):
             limite_habilidades=2
         )
 
+    def limite_habilidades_padrao(self):
+        return 2
+
     def exibir_status(self):
         return f"Vida: {self._pontos_vida} | Ataque: {self._pontos_ataque} | Defesa: {self._pontos_defesa}"
 
-#Mago : Subclasse de  Classe  que representa um mago.
+#Mago : Subclasse de  Classe  que representa um mago. (Feito)
 #pontos_vida : 8 + ( pontos_defesa * 2)
 #dado_de_ataque : D6.
 #pontos_ataque : 10
@@ -122,10 +136,13 @@ class Mago(Classe):
             limite_habilidades=5
         )
 
+    def limite_habilidades_padrao(self):
+        return 5
+
     def exibir_status(self):
         return f"Vida: {self._pontos_vida} | Ataque: {self._pontos_ataque} | Defesa: {self._pontos_defesa}"
 
-#Ladino : Subclasse de  Classe  que representa um ladino.
+#Ladino : Subclasse de  Classe  que representa um ladino. (Feito)
 #pontos_vida : 6 + ( pontos_defesa * 3)
 #dado_de_ataque : D8.
 #pontos_ataque : 8
@@ -140,8 +157,10 @@ class Ladino(Classe):
             pontos_defesa=5,
             limite_habilidades=3
         )
-        #checa habilidade 50% de uso
-        # quando eu for atacar roda o dado
+    
+    def limite_habilidades_padrao(self):
+        return 5
+    
 
     def exibir_status(self):
         return f"Vida: {self._pontos_vida} | Ataque: {self._pontos_ataque} | Defesa: {self._pontos_defesa}"
@@ -192,31 +211,33 @@ class Personagem:
     def inventario(self, inventario):
         self._inventario = inventario
 
+# - Métodos especiais:
     def __str__(self):
-        return (
-        f"Nome: {self._nome} | "
-        f"Classe: {self._classe._nome} | "
-        f"Habilidades: {[habilidade.__class__.__name__ for habilidade in self._inventario]}"
-    )
+        return (f"Nome: {self._nome} | "
+                f"Classe: {self._classe._nome} | "
+                f"Habilidades: {[habilidade.__class__.__name__ for habilidade in self._inventario]}")
 
     def __repr__(self):
-        return (
-        f"Personagem(nome='{self._nome}', "
-        f"classe='{self._classe._nome}', "
-        f"inventario={[habilidade.__class__.__name__ for habilidade in self._inventario]})"
-    )
-        
-# - Métodos:
-    
-# criar_personagem(): Cria o objeto personagem
+        return (f"Personagem(nome='{self._nome}', "
+                f"classe='{self._classe._nome}', "
+                f"inventario={[habilidade.__class__.__name__ for habilidade in self._inventario]})")
+
+    def __eq__(self, outro):
+        if not isinstance(outro, Personagem):
+            return False
+        return self._nome == outro._nome and self._classe.__class__ == outro._classe.__class__
+ 
+# - Métodos de funcionalidade:
+# criar_personagem(): Cria o objeto personagem (Feito)
     @staticmethod 
     def criar_personagem(nome, nome_classe, habilidades_raw):
-        habilidades_map = {"BolaDeFogo": BolaDeFogo,
-                           "Cura": Cura,
-                           "Tiro de Arco": TiroArco
-                           }
+        habilidades_map = {
+            "BolaDeFogo": BolaDeFogo,
+            "Cura": Cura,
+            "Tiro de Arco": TiroArco
+        }
 
-        # 1. Cria a classe (isso já define limite_habilidades)
+        # 1. Cria a classe
         if nome_classe == "Guerreiro":
             classe = Guerreiro()
         elif nome_classe == "Mago":
@@ -226,29 +247,23 @@ class Personagem:
         else:
             raise ErroClasseInvalida(f"Classe '{nome_classe}' não é reconhecida.")
 
-        # 3. Monta o inventário
-        # Remove habilidades inválidas
-        habilidades_validas = []
+        # 2. Monta o inventário e valida as habilidades
+        inventario = []
         for habilidade_nome in habilidades_raw:
             if habilidade_nome in habilidades_map:
-                habilidades_validas.append(habilidade_nome)
+                inventario.append(habilidades_map[habilidade_nome]())
             else:
                 raise ErroHabilidadeInvalida(f"Habilidade '{habilidade_nome}' não reconhecida.")
 
-        # 3. Se exceder o limite, corta o excesso e lança o erro depois de criar o personagem
-        excedeu_limite = False
-        if len(habilidades_validas) > classe.limite_habilidades:
-            habilidades_validas = habilidades_validas[:classe.limite_habilidades]
-            excedeu_limite = True  # Marca que houve erro, mas não para o fluxo
+        # 3. Verifica o limite de habilidades
+        if len(inventario) > classe.limite_habilidades:
+            raise ErroLimiteInventario(
+                f"A classe '{classe.nome}' permite no máximo {classe.limite_habilidades} habilidades, mas você tentou adicionar {len(inventario)}.")
 
-        # 4. Monta o inventário com as habilidades válidas
-        inventario = [habilidades_map[n]() for n in habilidades_validas]
         return Personagem(nome, classe, inventario)
-        
 
 
-#usar_habilidade(alvo : Personagem) : Método que simula o uso de uma habilidade, retornando o dano causado.
-# verifica se a habilidade está no inventário 
+#usar_habilidade(alvo : Personagem) : Método que simula o uso de uma habilidade, retornando o dano causado e verifica se a habilidade está no inventário (Feito)
     def usar_habilidade(self, habilidade, alvo):
         if habilidade not in self._inventario:
             raise ErroHabilidadeNaoEncontrada("Habilidade não está no inventário.")
@@ -258,13 +273,10 @@ class Personagem:
         return dano, habilidade.tipo
 
 
-#atacar(alvo : Personagem) : Método que simula um ataque do personagem,
-#retornando o dano causado.
-#Ao atacar, o personagem deve, antes de jogar o dado de ataque, verificar se não
-#utilizará uma habilidade.
-#Enquanto houver habilidades no inventário, o personagem deve ter uma chance
-#de 50% de usar uma habilidade.
-#O dano padrão de qualquer personagem é realizado com o dado de ataque da classe.     
+#atacar(alvo : Personagem) : Método que simula um ataque do personagem, retornando o dano causado. (Feito)
+#Ao atacar, o personagem deve, antes de jogar o dado de ataque, verificar se não utilizará uma habilidade. (Feito)
+#Enquanto houver habilidades no inventário, o personagem deve ter uma chance de 50% de usar uma habilidade. (Feito)
+#O dano padrão de qualquer personagem é realizado com o dado de ataque da classe. (Feito)    
     def atacar(self, alvo):
         if self._inventario and random.random() < 0.5:
             habilidade = random.choice(self.inventario)

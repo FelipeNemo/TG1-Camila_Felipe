@@ -1,12 +1,11 @@
 import systemRPG as r
 #import gameplay as y
+#O sistema deve gerar um relatório de combate, que deve conter o nome dos personagens,
+# o dano causado por cada ataque e o vencedor do combate.
 
-def main():
+def main(): 
     with open("reports/erros.log", "w", newline='') as f:  # Limpa o log no início do programa
-        pass  # arquivo fica vazio
-    #personagens, erros = r.carregar_personagens("Entrada/entrada.txt")
-    #if erros:
-        #r.salvar_log("erros.log", [["Personagem", "Erro"]] + erros)
+        pass  
 
     while True:
         print("\n=== MENU RPG ===")
@@ -21,7 +20,7 @@ def main():
             if erros:
                 r.salvar_log("reports/erros.log", [["Personagem", "Erro"]] + erros)
             relatorio1 = r.combate_entre_dois(personagens)
-            r.salvar_csv("reports/relatorio_entre_dois.csv", relatorio1)
+            r.salvar_csv("reports/relatorio_entre_dois.csv", relatorio1) 
             #y.mostrar_batalha(relatorio, sprites)
 
         elif opcao == "2":

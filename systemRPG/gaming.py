@@ -1,9 +1,9 @@
-"""Classes para manipulação de ações dos personagens dentro do jogo"""
+"""Classes para manipulação de jogabilidade dos personagens"""
 
 
 import random
 from .errors import *
-from .users import *
+#from .users import *
 from abc import ABC, abstractmethod
 import csv
 
@@ -40,8 +40,43 @@ class Dado(ABC):
             raise NumeroLadosInvalido("O número de lados deve ser maior que 0")
         self._lados = lados
 
+    # - Métodos especiais:
     def __str__(self):
         return f"{self.__class__.__name__} com {self.lados} lados"
+    
+    def __repr__(self):
+        return f"{self.__class__.__name__} com {self.lados} lados"
+    
+    # Métodos de comparação de lados:
+    def __eq__(self, other): # ==
+        if isinstance(other, Dado):
+            return self.lados == other.lados
+        return NotImplemented
+
+    def __lt__(self, other): # <
+        if isinstance(other, Dado):
+            return self.lados < other.lados
+        return NotImplemented
+
+    def __le__(self, other): # <=
+        if isinstance(other, Dado):
+            return self.lados <= other.lados
+        return NotImplemented
+
+    def __gt__(self, other): # >
+        if isinstance(other, Dado):
+            return self.lados > other.lados
+        return NotImplemented
+
+    def __ge__(self, other): # >=
+        if isinstance(other, Dado):
+            return self.lados >= other.lados
+        return NotImplemented
+
+    def __ne__(self, other): # != 
+        if isinstance(other, Dado):
+            return self.lados != other.lados
+        return NotImplemented
 
     @abstractmethod
     def jogar(self):
@@ -98,10 +133,10 @@ class D20(Dado):
         return random.randint(1, self.lados)
     
 #Habilidade : Classe que representa uma habilidade do personagem.
-#nome : Nome da habilidade.
-#descricao : Descrição da habilidade.
-#pontos_ataque : Pontos de ataque da habilidade.
-#usar() : Método que simula o uso da habilidade.
+#nome : Nome da habilidade. (Feito)
+#descricao : Descrição da habilidade. (Feito)
+#pontos_ataque : Pontos de ataque da habilidade. (Feito)
+#usar() : Método que simula o uso da habilidade. (Feito)
 class Habilidade:
     def __init__(self, descricao, pontos_ataque, tipo):
         self.nome = self.__class__.__name__ 
@@ -115,7 +150,9 @@ class Habilidade:
 
     def __str__(self):
         return f"{self.nome}: (Poder de ataque: {self.pontos_ataque})"
-
+    
+    def __repr__(self):
+        return f"{self.nome}: (Poder de ataque: {self.pontos_ataque})"
 
 
 #BolaDeFogo : Subclasse de  Habilidade  que representa uma bola de fogo.
@@ -169,25 +206,25 @@ class TiroArco(Habilidade):
 #personagens : Lista de personagens que estão na arena. (Feito)
 #adicionar_personagem() : Método que adiciona um personagem à arena. (Feito)
 #remover_personagem() : Método que remove um personagem da arena. (Feito)
-#combate() : Método que simula o combate entre os personagens da arena, (Feito)
-#retornando o vencedor.
+#combate() : Método que simula o combate entre os personagens da arena, retornando o vencedor. (Feito)
 #As regras do combate serão as seguintes:
-#O combate será realizado em turnos, onde cada personagem pode atacar
-#um oponente aleatório (em combates com dois jogadores, será sempre o
-#mesmo).
-#O atacante rodará um D20 (um dado de 20 lados) e somará o resultado ao
-#seu ataque.
-#Se o valor final de ataque for maior que o valor de defesa do oponente, o
-#ataque será bem sucedido.
+#O combate será realizado em turnos, onde cada personagem pode atacar um oponente aleatório (em combates com dois jogadores, será sempre o mesmo). (Feito)
+#O atacante rodará um D20 (um dado de 20 lados) e somará o resultado ao seu ataque. (Feito)
+#Se o valor final de ataque for maior que o valor de defesa do oponente, o ataque será bem sucedido. (Feito)
 
-# para cura Personagem.usar_habilidade
-#para ataque Personagem.atacar
 
 class Arena:
     def __init__(self, personagens):
         self.personagens = personagens
         self.relatorio = []
         self.dado_20 = D20()
+
+    def __str__(self):
+        status = ', '.join(p.nome for p in self.personagens)
+        return f"Arena com {len(self.personagens)} personagem(ns): {status}"
+
+    def __repr__(self):
+        return f"Arena(personagens={self.personagens!r})"
 
     def adicionar_personagem(self, personagem):
         self.personagens.append(personagem)

@@ -1,2 +1,3 @@
 Personagem,Erro
-Frodo,"ErroClasseInvalida (Habilidade 'Escudo Divino' não reconhecida.) — habilidades filtradas: ['Tiro de Arco', 'Cura']"
+Limite de inventário excedido,"ErroLimiteInventario (A classe 'Mago' permite no máximo 5 habilidades, mas você tentou adicionar 6.)"
+Habilidade inválida,ErroHabilidadeInvalida (Habilidade 'Escudo Divino' não reconhecida.)
