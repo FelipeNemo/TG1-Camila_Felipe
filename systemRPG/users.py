@@ -183,6 +183,7 @@ class Personagem:
         else:
             raise ErroClasseInvalida(f"Classe '{nome_classe}' não é reconhecida.")
 
+
     @property
     def inventario(self):
         return self._inventario
@@ -225,18 +226,25 @@ class Personagem:
         else:
             raise ErroClasseInvalida(f"Classe '{nome_classe}' não é reconhecida.")
 
-        # 2. Verifica o limite de habilidades
-        if len(habilidades_raw) > classe.limite_habilidades:
-            raise ErroLimiteInventario(f"A classe '{classe.nome}' permite no máximo {classe.limite_habilidades} habilidades, mas você tentou adicionar {len(habilidades_raw)}.")
         # 3. Monta o inventário
-        inventario = []
+        # Remove habilidades inválidas
+        habilidades_validas = []
         for habilidade_nome in habilidades_raw:
             if habilidade_nome in habilidades_map:
-                inventario.append(habilidades_map[habilidade_nome]())
+                habilidades_validas.append(habilidade_nome)
             else:
                 raise ErroHabilidadeInvalida(f"Habilidade '{habilidade_nome}' não reconhecida.")
 
+        # 3. Se exceder o limite, corta o excesso e lança o erro depois de criar o personagem
+        excedeu_limite = False
+        if len(habilidades_validas) > classe.limite_habilidades:
+            habilidades_validas = habilidades_validas[:classe.limite_habilidades]
+            excedeu_limite = True  # Marca que houve erro, mas não para o fluxo
+
+        # 4. Monta o inventário com as habilidades válidas
+        inventario = [habilidades_map[n]() for n in habilidades_validas]
         return Personagem(nome, classe, inventario)
+        
 
 
 #usar_habilidade(alvo : Personagem) : Método que simula o uso de uma habilidade, retornando o dano causado.

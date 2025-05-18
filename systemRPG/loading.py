@@ -1,6 +1,7 @@
+
+# _------------------------------------------------------------------------
 """Arquivo responsável por carregar personagens e tratamento de erros"""
 
-# Tratar(Excluir habilidade que não é instanciada em Habilidade// remover itens que excedem o limite de habilidade da classe) os objetos personagens depois que o erro for lançado
 import csv
 from .users import *
 from .errors import *
@@ -14,16 +15,16 @@ def salvar_log(nome_arquivo, dados):
         writer.writerows(dados)
 
 # ------------------------------------
+
 def carregar_personagens(caminho_arquivo):
     personagens = []
     erros = []
-
 
     try:
         with open(caminho_arquivo, "r", encoding="utf-8") as arquivo:
             conteudo = arquivo.read()
             blocos = conteudo.split("\n\n")  # cada bloco representa um personagem e é separado por \n 
-            
+
             for bloco in blocos:
                 linhas = bloco.strip().split("\n")
                 nome = None
@@ -35,11 +36,9 @@ def carregar_personagens(caminho_arquivo):
 
                     if linha.startswith("### "):
                         nome = linha[4:].strip()
-                        #print(f"[DEBUG] Nome do personagem encontrado: {nome}")
 
                     elif linha.startswith("- **Classe**:"):
                         classe = linha.replace("- **Classe**:", "").strip()
-                        #print(f"[DEBUG] Classe encontrada: {classe}")
 
                     elif linha.startswith("- **Habilidades**:"):
                         continue
@@ -47,49 +46,49 @@ def carregar_personagens(caminho_arquivo):
                     elif linha.startswith("-"):
                         habilidade = linha[2:].strip()
                         habilidades.append(habilidade)
-                        #print(f"[DEBUG] Habilidade adicionada: {habilidade}")
 
                 if nome and classe and habilidades:
-                    #print(f"[DEBUG] Criando personagem: {nome}, {classe}, {habilidades}")
-                    habilidades = habilidades[:5]  # limitar a 5
-                    personagem = Personagem.criar_personagem(nome, classe, habilidades)
-                    if personagem:
+                    try:
+                        personagem = Personagem.criar_personagem(nome, classe, habilidades)
                         personagens.append(personagem)
-                    else:
-                        erros.append([nome, f"Classe inválida: {nome} {classe} {habilidades}"])     
-                    
-                # gaming.py class Habilidade usar()
-                # users.py class usar_habilidade(), atacar()
 
-    except FileNotFoundError:
-        erros.append(["Arquivo", "Não encontrado"])
+                    except ErroHabilidadeInvalida as e:
+                        # Trata habilidades inválidas
+                        habilidades_validas = [
+                            h for h in habilidades 
+                            if h in ["BolaDeFogo", "Cura", "Tiro de Arco"]
+                        ]
+                        erros.append([nome, f"{str(e)} — habilidades filtradas: {habilidades_validas}"])
+                        # Tenta criar novamente com habilidades filtradas
+                        try:
+                            personagem = Personagem.criar_personagem(nome, classe, habilidades_validas)
+                            personagens.append(personagem)
+                        except Exception as e2:
+                            erros.append([nome, f"Erro após tentar corrigir habilidades: {str(e2)}"])
 
-    except ErroClasseInvalida as e:
-        erros.append(["Classe inválida", str(e)])
+                    except ErroLimiteInventario as e:
+                        erros.append([nome, f"{str(e)} — habilidades antes: {habilidades}"])
+                        habilidades_limitadas = habilidades[:Personagem._classe.limite_habilidades]
 
-    except ErroLimiteInventario as e:
-        erros.append(["Limite de inventário excedido", str(e)])
+                        try:
+                            personagem = Personagem.criar_personagem(nome, classe, habilidades_limitadas)
+                            personagens.append(personagem)
+                            erros.append([nome, f"ErroLimiteInventario tratado — habilidades limitadas: {habilidades_limitadas}"])
+                        except Exception as e3:
+                            erros.append([nome, f"Erro após tentar limitar habilidades: {str(e3)}"])
 
-    except ErroInventarioVazio as e:
-        erros.append(["Inventário vazio", str(e)])
 
-    except ErroHabilidadeInvalida as e:
-        erros.append(["Habilidade inválida", str(e)]) 
-    
-    except ErroDadoAtaqueInvalido as e:
-        erros.append(["Dado de ataque inválido", str(e)])
+                    except ErroClasseInvalida as e:
+                        erros.append([nome, str(e)])
 
-    except ErroPersonagemInvalido as e:
-        erros.append(["Erro personagem inválido", str(e)])
-    
-    except ErroNumeroPersonagem as e:
-        erros.append(["Personagens insuficiêntes para o combate", str(e)])
+                    except Exception as e:
+                        erros.append([nome, f"Erro inesperado ao criar personagem: {str(e)}"])
 
-    except ErroHabilidadeNaoEncontrada as e:
-        erros.append(["Erro inesperado", str(e)])
+                    except FileNotFoundError:
+                        erros.append(["Arquivo", "Não encontrado"])
 
-    except Exception as e:
-        erros.append(["Erro inesperado", str(e)]) 
+    except ErroLeituraArquivo as e:
+        erros.append(["Erro inesperado na leitura do arquivo", str(e)])
 
     print("[DEBUG] Personagens carregados:", personagens)
     return personagens, erros

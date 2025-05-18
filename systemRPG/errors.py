@@ -15,14 +15,14 @@ class ErroClasseInvalida(Exception):
     def __str__(self):
         return "ErroClasseInvalida (" + self.__msg +")"  
 
-class ErroLimiteInventario(Exception):
+class ErroLimiteInventario(Exception): # Saruman
     """Define o limite do inventário para cada Classe válida"""
     def __init__(self, mensagem):
         self.__msg=mensagem
     def __str__(self):
         return "ErroClasseInvalida (" + self.__msg +")" 
 
-class ErroHabilidadeInvalida(Exception):
+class ErroHabilidadeInvalida(Exception): # Frodo
     """Habilidade não é válida - ou seja não possue classe com o nome da habilidade"""
     def __init__(self, mensagem):
         self.__msg=mensagem
@@ -62,6 +62,11 @@ class ErroHabilidadeNaoEncontrada(Exception):
     def __init__(self, mensagem):
         self.__msg=mensagem
     def __str__(self):
-        return "ErroClasseInvalida (" + self.__msg +")"
+        return "ErroClasseInvalida (" + self.__msg +")" 
     
-    
+class ErroLeituraArquivo(Exception):
+    """Erro ao ler o arquivo"""
+    def __init__(self, mensagem):
+        self.__msg=mensagem
+    def __str__(self):
+        return "ErroLeituraArquivo (" + self.__msg +")"

@@ -1,2 +1,2 @@
 Personagem,Erro
-Habilidade inválida,ErroClasseInvalida (Habilidade 'Escudo Divino' não reconhecida.)
+Frodo,"ErroClasseInvalida (Habilidade 'Escudo Divino' não reconhecida.) — habilidades filtradas: ['Tiro de Arco', 'Cura']"
