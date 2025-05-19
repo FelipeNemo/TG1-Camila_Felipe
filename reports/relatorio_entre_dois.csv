@@ -1,0 +1,5 @@
+nome atacante,hp atacante,nome alvo,hp alvo,dado lancado,dano,sucesso,esta vivo,estado geral
+,,,,,,,,"[{'nome': 'Gandalf', 'hp': 14, 'vivo': True}, {'nome': 'Saruman', 'hp': 14, 'vivo': True}]"
+Gandalf,14,Saruman,4,18,10,True,True,"[{'nome': 'Gandalf', 'hp': 14, 'vivo': True}, {'nome': 'Saruman', 'hp': 4, 'vivo': True}]"
+Saruman,4,Gandalf,4,9,10,True,True,"[{'nome': 'Gandalf', 'hp': 4, 'vivo': True}, {'nome': 'Saruman', 'hp': 4, 'vivo': True}]"
+Gandalf,4,Saruman,-8,3,12,True,False,"[{'nome': 'Gandalf', 'hp': 4, 'vivo': True}, {'nome': 'Saruman', 'hp': -8, 'vivo': False}]"
