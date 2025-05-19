@@ -1,33 +1,34 @@
-# Pacote systemRPG
+# Pacote `systemRPG`
 
-Reports → Dados do relatório e erros.log.
+### Estrutura do Projeto
 
-SystemRPG → lógica de batalha e arquivos.
+- **`Reports/`**  
+  Contém os dados de relatório e o arquivo `erros.log`.
 
-constants.py: Guarda as constantes.
+- **`systemRPG/`**  
+  Núcleo da lógica de batalha e componentes principais:
+  
+  - `constants.py`: Armazena constantes globais.  
+  - `combate.py`: Define as funções `free_for_all()` e `combate_entre_dois()`, que utilizam a classe `Arena`.  
+  - `erros.py`: Define exceções customizadas do sistema.  
+  - `gaming.py`: Contém as classes `Dado`, `Habilidade` (e subclasses), e `Arena`, com métodos para gerar os dados do relatório.  
+  - `loading.py`: Função `carregar_personagem()` que lida com exceções, lê o arquivo de entrada e utiliza `criar_personagem()`.  
+  - `users.py`: Define a classe `Classe` (e subclasses), `Personagem`, e os métodos `criar_personagem()`, `usar_habilidade()` e `atacar()`.
 
-combate.py: Guarda as funções free_for_all() e um_contra_um() que utilizam a classe Arena.
+- **`gameplay/`**  
+  Responsável pelos elementos visuais e animações:
+  
+  - `graph.py`: Gera o gráfico HP x Rodada.  
+  - `animation.py`: Cria animações com base nas sprints do combate a partir do relatório.
 
-erros.py: Guarda classes de erros elevados do sistema.
+- **`main.py`**  
+  Menu principal e interface.
 
-gaming.py: Guarda a classe Dado, Habilidade e suas subclasses e Arena com os métodos necessários para gerar os dados que vão gerar o relatório.
+### Importação:
 
-loading.py: Função carregar_personagem() que estabelece as exceções lê o arquivo de entrada, e usa a função criar_personagem().
-
-users.py: Guarda a classe Classe e suas subclasses, classe Personagem e métodos criar_personagem(), usar_habilidade() e atacar().
- 
-gameplay → animação, visual.
-
-graph.py faz o gráfico HP x Rodada
-animation.py faz animação usando as sprints de combate com base no relatório.
-
-main.py → menu/interação
-
-import systemRPG as e
+```python
+import systemRPG as r
 import gameplay as g
 
-e aplica as funções free_for_all() e um_contra_um()
-
-
-
- 
+r.free_for_all()
+r.combate_entre_dois()
